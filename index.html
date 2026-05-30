@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enlightened Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/radio/manifest.json">
+  <meta property="og:title" content="Enlightened Radio" />
+  <meta property="og:description" content="You're listening to Enlightened Radio!" />
+  <meta property="og:url" content="https://ashhaven.com/" />
+  <meta property="og:image" content="https://ashhaven.com/images/logo.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="AshHaven" />
+  <meta name="theme-color" content="#33ffff" />
+  <style>
+    body {
+      background-color: #050505;
+      color: #aaaaaa;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .radio-container {
+      background: radial-gradient(circle at top left, #1a1a1a, #0a0a0a);
+      border: 2px solid #222222;
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 0 35px rgba(123, 44, 191, 0.5), inset 0 0 20px rgba(123, 44, 191, 0.15);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+
+    .radio-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #e0e0e0;
+      text-shadow: 0 0 10px #7b2cbf, 0 0 20px #7b2cbf;
+      letter-spacing: 2px;
+    }
+
+    .dial:after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 20px;
+      background: #7b2cbf;
+      top: 10px;
+      left: 28px;
+    }
+
+    #volumeSlider {
+      width: 80%;
+      margin: 1rem 0;
+      accent-color: #7b2cbf;
+    }
+
+    #audio-player {
+      display: none;
+    }
+
+    .led {
+      width: 14px;
+      height: 14px;
+      background: #222222;
+      border-radius: 50%;
+      margin: 0.5rem auto;
+      box-shadow: 0 0 8px #000;
+      transition: all 0.3s ease;
+    }
+
+    .power-switch {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .power-button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #3c096c;
+      background: #111111;
+      color: #7b2cbf;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(123, 44, 191, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .power-button:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 5px rgba(123, 44, 191, 0.8), inset 0 0 5px rgba(123, 44, 191, 0.5);
+    }
+
+    .kofi-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: #9d4edd;
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.3s ease, text-shadow 0.3s ease;
+      border-bottom: 1px dotted #9d4edd;
+    }
+
+    .kofi-link:hover {
+      opacity: 1;
+      text-shadow: 0 0 8px #c77dff;
+      border-bottom: 1px solid #9d4edd;
+    }
+
+    .reset-button {
+      background: transparent;
+      color: #666;
+      border: 1px solid #333;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.7rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+
+    .reset-button:hover {
+      background: #1f0101;
+      color: #ff3333;
+      border-color: #ff3333;
+      box-shadow: 0 0 8px rgba(255, 51, 51, 0.4);
+    }
+
+    .footer-controls {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Filters Dropdown Styles */
+    .filters-dropdown {
+      position: relative;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+
+    .filters-btn {
+      padding: 0.5rem 1rem;
+      background: #111111;
+      border: 1px solid #5a189a;
+      border-radius: 12px;
+      color: #9d4edd;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(123, 44, 191, 0.2);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .filters-btn:hover {
+      box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+      background: #240046;
+      color: #e0aaff;
+      border-color: #7b2cbf;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0a0a0a;
+      border: 1px solid #3c096c;
+      border-radius: 12px;
+      padding: 1rem;
+      min-width: 250px;
+      z-index: 100;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(123, 44, 191, 0.3);
+      flex-direction: column;
+      gap: 0.8rem;
+      text-align: left;
+    }
+
+    .dropdown-content.show {
+      display: flex;
+    }
+
+    .dropdown-content label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #9d4edd;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .dropdown-content label:hover {
+      color: #e0aaff;
+      text-shadow: 0 0 8px rgba(157, 78, 221, 0.8);
+    }
+
+    .dropdown-content input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #9d4edd;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="radio-container">
+    <div class="radio-title">📻 Enlightened Radio</div>
+    <div id="power-led" class="led"></div>
+    <div id="now-playing"
+      style="margin-top: 1rem; font-size: 1rem; color: #c77dff; text-shadow: 0 0 8px rgba(153, 51, 255, 0.5); min-height: 1.5rem;">
+    </div>
+    <input type="range" id="volumeSlider" min="0" max="1.5" step="0.015" value="0.75">
+    <div class="power-switch">
+      <button id="powerButton" class="power-button">⏻</button>
+    </div>
+    <div class="filters-dropdown">
+      <button id="filtersBtn" class="filters-btn">Filters ▾</button>
+      <div id="filtersContent" class="dropdown-content">
+        <label title="Immersive: Skips host voice lines and intro for uninterrupted music.">
+          <input type="checkbox" id="immersiveMode">Immersive
+        </label>
+        <label title="Fallout Only: Only plays songs from the Fallout Games and Show.">
+          <input type="checkbox" id="falloutMode">Fallout Only
+        </label>
+        <label title="Ad Free: Skips ads and radio plays, only music.">
+          <input type="checkbox" id="adFreeMode">Ad Free
+        </label>
+        <label title="Family Friendly: Excludes songs with Nsfw tags.">
+          <input type="checkbox" id="familyFriendlyMode">Family Friendly
+        </label>
+      </div>
+    </div>
+    <audio id="audio-player" controls></audio>
+
+    <div class="footer-controls">
+      <a href="https://ko-fi.com/thelootificer" target="_blank" class="kofi-link" title="Support the station">☕ Buy me a
+        Nuka-Cola</a>
+      <button onclick="resetRadio()" class="reset-button" title="Clear saved data and reload">⚠ System Reset</button>
+    </div>
+
+  </div>
+  <script src="scripts.js"></script>
+  <script>
+    const powerButton = document.getElementById('powerButton');
+    const powerLed = document.getElementById('power-led');
+    let isPoweredOn = false;
+
+    powerButton.addEventListener('click', () => {
+      isPoweredOn = !isPoweredOn;
+      if (isPoweredOn) {
+        powerLed.style.background = '#c77dff';
+        powerLed.style.boxShadow = '0 0 10px #c77dff';
+        if (typeof powerOn === 'function') powerOn();
+      } else {
+        powerLed.style.background = '#222';
+        powerLed.style.boxShadow = '0 0 8px #000';
+        if (typeof powerOff === 'function') powerOff();
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/radio/service-worker.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch((error) => console.error('Service Worker Registration Failed:', error));
+    }
+  </script>
+</body>
+
+</html>
