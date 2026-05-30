@@ -6,10 +6,10 @@ import re
 import sys
 
 # Configuration
-SONGS_DIR = os.path.join(RADIO_DIR, "Songs")
-SCRIPTS_JS = os.path.join(RADIO_DIR, "scripts.js")
-BACKUP_HTML = os.path.join(RADIO_DIR, "backup.html")
-TITLES_JSON = os.path.join(RADIO_DIR, "song_titles.json")
+SONGS_DIR = "Songs"
+SCRIPTS_JS = "scripts.js"
+BACKUP_HTML = "backup.html"
+TITLES_JSON = "song_titles.json"
 
 def update_file_text_refs(filepath, start_index):
     """
