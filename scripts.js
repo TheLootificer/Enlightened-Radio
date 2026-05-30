@@ -1,3 +1,5 @@
+const RADIO_VERSION = "v3.3.1";
+
 const songsFolder = 'Songs/';
 const adsFolder = 'Ads/';
 const playsFolder = 'Plays/';
@@ -705,6 +707,17 @@ function resetRadio() {
   localStorage.removeItem('radioState');
   localStorage.removeItem('radioVolume'); // Optional: reset volume too? Maybe keep volume.
   location.reload();
+}
+
+function checkVersion() {
+  fetch('version.json', { cache: 'no-store' })
+    .then(res => res.json())
+    .then(data => {
+      if (data.version && data.version !== RADIO_VERSION) {
+        document.getElementById('updateModal').classList.add('show');
+      }
+    })
+    .catch(() => {});
 }
 
 // Filters Dropdown Toggle
