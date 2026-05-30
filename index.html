@@ -362,6 +362,18 @@
       </div>
     </div>
 
+    <!-- Update Available Modal -->
+    <div id="updateModal" class="modal" onclick="closeUpdateModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">📡 Update Available</div>
+        <p style="color: #aaaaaa; margin: 0.5rem 0;">Your browser has a cached version of Enlightened Radio that is out of date.</p>
+        <p style="color: #aaaaaa; margin: 0.5rem 0 1rem;">Click <strong style="color: #ff6666;">System Reset</strong> below to load the latest version.</p>
+        <button onclick="resetRadio()" class="reset-button" style="font-size: 0.85rem; padding: 0.4rem 1rem;">⚠ System Reset</button>
+        <br>
+        <button onclick="closeUpdateModal()" class="modal-close" style="margin-top: 0.75rem;">Dismiss</button>
+      </div>
+    </div>
+
   </div>
   <script src="scripts.js"></script>
   <script>
@@ -392,11 +404,22 @@
       }
     }
 
-    // Close modal when pressing Escape key
+    function closeUpdateModal(event) {
+      if (!event || event.target.id === 'updateModal') {
+        document.getElementById('updateModal').classList.remove('show');
+      }
+    }
+
+    // Close modals when pressing Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeContactModal();
+        closeUpdateModal();
       }
+    });
+
+    window.addEventListener('load', () => {
+      if (typeof checkVersion === 'function') checkVersion();
     });
 
     if ('serviceWorker' in navigator) {
