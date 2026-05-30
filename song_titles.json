@@ -1,0 +1,1126 @@
+{
+    "song1.mp3": {
+        "title": "'Til I Kissed You by The Everly Brothers",
+        "genre": ""
+    },
+    "song2.mp3": {
+        "title": "A Dear John Letter by Ferlin Husky",
+        "genre": ""
+    },
+    "song3.mp3": {
+        "title": "A Good Man Is Hard To Find by Cass Daley",
+        "genre": "Fallout"
+    },
+    "song4.mp3": {
+        "title": "A Kiss to Build A Dream On by Louis Armstrong",
+        "genre": "Fallout"
+    },
+    "song5.mp3": {
+        "title": "A Wonderful Guy by Tex Beneke",
+        "genre": "Fallout"
+    },
+    "song6.mp3": {
+        "title": "Accentuate the Positive by Bing Crosby",
+        "genre": "Fallout"
+    },
+    "song7.mp3": {
+        "title": "Act Naturally by Buck Owens",
+        "genre": "Fallout"
+    },
+    "song8.mp3": {
+        "title": "Again by Doris Day",
+        "genre": ""
+    },
+    "song9.mp3": {
+        "title": "Ain't Misbehavin by Fats Waller",
+        "genre": "Fallout"
+    },
+    "song10.mp3": {
+        "title": "Ain't That a Kick in the Head by Dean Martin",
+        "genre": "Fallout"
+    },
+    "song11.mp3": {
+        "title": "Ain't That a Shame by Fats Domino",
+        "genre": ""
+    },
+    "song12.mp3": {
+        "title": "Ain't We Got Fun by Peggy Lee",
+        "genre": ""
+    },
+    "song13.mp3": {
+        "title": "All Alone Am I by Brenda Lee",
+        "genre": ""
+    },
+    "song14.mp3": {
+        "title": "All I Have To Do Is Dream by Everly Brothers",
+        "genre": ""
+    },
+    "song15.mp3": {
+        "title": "All Over Again by Johnny Cash",
+        "genre": "Fallout"
+    },
+    "song16.mp3": {
+        "title": "Always by Douglas Gamley",
+        "genre": "Fallout"
+    },
+    "song17.mp3": {
+        "title": "Annies Song by John Denver",
+        "genre": "Fallout"
+    },
+    "song18.mp3": {
+        "title": "Answer to Driving Nails in my Coffin by Jerry Irby",
+        "genre": "Fallout"
+    },
+    "song19.mp3": {
+        "title": "Anything Goes by Cole Porter",
+        "genre": "Fallout"
+    },
+    "song20.mp3": {
+        "title": "At The Hop by Danny And the Juniors",
+        "genre": ""
+    },
+    "song21.mp3": {
+        "title": "Atom Bomb Baby by The Five Stars",
+        "genre": "Fallout"
+    },
+    "song22.mp3": {
+        "title": "Atomic Cocktail by Slim Gaillard",
+        "genre": ""
+    },
+    "song23.mp3": {
+        "title": "Because You're Mine by Nat King Cole",
+        "genre": ""
+    },
+    "song24.mp3": {
+        "title": "Bedelia by Bill Stutz",
+        "genre": "Fallout"
+    },
+    "song25.mp3": {
+        "title": "Beyond the Sea by Bobby Darin",
+        "genre": ""
+    },
+    "song26.mp3": {
+        "title": "Big Iron by Marty Robbins",
+        "genre": "Fallout"
+    },
+    "song27.mp3": {
+        "title": "Big Note Blues by Bert Weedon",
+        "genre": ""
+    },
+    "song28.mp3": {
+        "title": "Billy the Kid by Marty Robbins",
+        "genre": ""
+    },
+    "song29.mp3": {
+        "title": "Black Coffee by Peggy Lee",
+        "genre": ""
+    },
+    "song30.mp3": {
+        "title": "Blue Moon by Frank Sinatra",
+        "genre": "Fallout"
+    },
+    "song31.mp3": {
+        "title": "Blue Moon by Sam Cooke",
+        "genre": ""
+    },
+    "song32.mp3": {
+        "title": "Blue Velvet by Bobby Vinton",
+        "genre": ""
+    },
+    "song33.mp3": {
+        "title": "Boogie Man by Sid Philips",
+        "genre": "Fallout"
+    },
+    "song34.mp3": {
+        "title": "Brighter Side by Connie Conway",
+        "genre": "Fallout"
+    },
+    "song35.mp3": {
+        "title": "Bubbles in My Beer by Bob Wills",
+        "genre": "Fallout"
+    },
+    "song36.mp3": {
+        "title": "Butcher Pete (Part 1) by Roy Brown",
+        "genre": "Fallout"
+    },
+    "song37.mp3": {
+        "title": "Butcher Pete (Part 2) by Roy Brown",
+        "genre": "Fallout"
+    },
+    "song38.mp3": {
+        "title": "California Dreamin by The Mamas & The Papas",
+        "genre": ""
+    },
+    "song39.mp3": {
+        "title": "Can't Do Sixty No More by Billy Ward",
+        "genre": ""
+    },
+    "song40.mp3": {
+        "title": "Can't Help Falling in Love by Elvis Presley",
+        "genre": ""
+    },
+    "song41.mp3": {
+        "title": "Chain Gang by Sam Cooke",
+        "genre": "Fallout"
+    },
+    "song42.mp3": {
+        "title": "Changing Partners by Helen Forest",
+        "genre": ""
+    },
+    "song43.mp3": {
+        "title": "Cheek to Cheek by Fred Astaire",
+        "genre": ""
+    },
+    "song44.mp3": {
+        "title": "Cheek to Cheek by Peggy Lee",
+        "genre": "Fallout"
+    },
+    "song45.mp3": {
+        "title": "Chop Chop by Sam Ronan",
+        "genre": ""
+    },
+    "song46.mp3": {
+        "title": "Civilization by Danny Kaye",
+        "genre": "Fallout"
+    },
+    "song47.mp3": {
+        "title": "Cocaine Blues by Roy Hogsed",
+        "genre": "Fallout"
+    },
+    "song48.mp3": {
+        "title": "Come Go With Me by The Del Vikings",
+        "genre": "Fallout"
+    },
+    "song49.mp3": {
+        "title": "Come Softly to Me by The Fleetwoods",
+        "genre": ""
+    },
+    "song50.mp3": {
+        "title": "Crawl Out Through the Fallout by Sheldon Allman",
+        "genre": "Fallout"
+    },
+    "song51.mp3": {
+        "title": "Crazy He Calls Me by Billie Holiday",
+        "genre": "Fallout"
+    },
+    "song52.mp3": {
+        "title": "Crying in the Rain by Everly Brothers",
+        "genre": ""
+    },
+    "song53.mp3": {
+        "title": "Daddy's Little Girl by The Mills Brothers",
+        "genre": "Fallout"
+    },
+    "song54.mp3": {
+        "title": "Dancing in the Moonlight by King Harvest",
+        "genre": ""
+    },
+    "song55.mp3": {
+        "title": "Dardanella by Alvino Rey",
+        "genre": "Fallout"
+    },
+    "song56.mp3": {
+        "title": "Dark As A Dungeon by Tennessee Ernie Ford",
+        "genre": "Fallout"
+    },
+    "song57.mp3": {
+        "title": "Dear Hearts and Gentle People by Bob Crosby",
+        "genre": "Fallout"
+    },
+    "song58.mp3": {
+        "title": "Destination Moon by Dinah Washington",
+        "genre": ""
+    },
+    "song59.mp3": {
+        "title": "Devil Drums by Raymond Scott",
+        "genre": "Fallout"
+    },
+    "song60.mp3": {
+        "title": "Doin the Uptown Lowdown by Joe Martin",
+        "genre": "Fallout"
+    },
+    "song61.mp3": {
+        "title": "Don't Fence Me In by Bing Crosby; The Andrews Sisters",
+        "genre": "Fallout"
+    },
+    "song62.mp3": {
+        "title": "Don't Let Me Be Misunderstood by The Animals",
+        "genre": ""
+    },
+    "song63.mp3": {
+        "title": "Don't Let the Stars Get in Your Eyes by Perry Como",
+        "genre": "Fallout"
+    },
+    "song64.mp3": {
+        "title": "Draggin' the River by Ferlin Husky",
+        "genre": "Fallout"
+    },
+    "song65.mp3": {
+        "title": "Dream by The Pied Pipers",
+        "genre": ""
+    },
+    "song66.mp3": {
+        "title": "Dream Lover by Dion",
+        "genre": ""
+    },
+    "song67.mp3": {
+        "title": "Drivin Nails in my Coffin by Ernest Tubb",
+        "genre": ""
+    },
+    "song68.mp3": {
+        "title": "Duck Soup by Charlie Ross",
+        "genre": "Fallout"
+    },
+    "song69.mp3": {
+        "title": "Earth Angel by The Penguins",
+        "genre": ""
+    },
+    "song70.mp3": {
+        "title": "Easy Living by Teddy Wilson",
+        "genre": "Fallout"
+    },
+    "song71.mp3": {
+        "title": "Everybody Loves Somebody by Dean Martin",
+        "genre": ""
+    },
+    "song72.mp3": {
+        "title": "Everyday by Buddy Holly",
+        "genre": ""
+    },
+    "song73.mp3": {
+        "title": "Fallout Shelter by Dore Alpert",
+        "genre": ""
+    },
+    "song74.mp3": {
+        "title": "Fever by Peggy Lee",
+        "genre": ""
+    },
+    "song75.mp3": {
+        "title": "Fox Boogie by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song76.mp3": {
+        "title": "From the First Hello by Jane Morgan",
+        "genre": "Fallout"
+    },
+    "song77.mp3": {
+        "title": "Gentle Guys by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song78.mp3": {
+        "title": "Get Happy by Judy Garland",
+        "genre": ""
+    },
+    "song79.mp3": {
+        "title": "Ghost Riders In The Sky by Sons of the Pioneers",
+        "genre": "Fallout"
+    },
+    "song80.mp3": {
+        "title": "Give Me the Simple Life by June Christy",
+        "genre": "Fallout"
+    },
+    "song81.mp3": {
+        "title": "Goin' Under by Darrell Wayne Perry",
+        "genre": "Fallout"
+    },
+    "song82.mp3": {
+        "title": "Good Rocking Tonight by Roy Brown",
+        "genre": "Fallout"
+    },
+    "song83.mp3": {
+        "title": "Goodnight, My Beautiful by Russ Morgan",
+        "genre": ""
+    },
+    "song84.mp3": {
+        "title": "Grandma Plays the Numbers by Wynonie Harris",
+        "genre": "Fallout"
+    },
+    "song85.mp3": {
+        "title": "Great Long Pistol by Jerry Irby",
+        "genre": "Nsfw"
+    },
+    "song86.mp3": {
+        "title": "Hallo Mister X by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song87.mp3": {
+        "title": "Hangover Heart by Hank Thompson",
+        "genre": ""
+    },
+    "song88.mp3": {
+        "title": "Happy Days Are Here Again by Ben Selvin",
+        "genre": "Fallout"
+    },
+    "song89.mp3": {
+        "title": "Happy Times by Bert Weedon",
+        "genre": "Fallout"
+    },
+    "song90.mp3": {
+        "title": "Happy Times by Bob Crosby",
+        "genre": "Fallout"
+    },
+    "song91.mp3": {
+        "title": "Happy Together by The Turtles",
+        "genre": ""
+    },
+    "song92.mp3": {
+        "title": "Hard Luck Blues by Roy Brown",
+        "genre": ""
+    },
+    "song93.mp3": {
+        "title": "Headin Down the Wrong Highway by Johnny Bond",
+        "genre": "Fallout"
+    },
+    "song94.mp3": {
+        "title": "Heartaches by the Number by Guy Mitchell",
+        "genre": "Fallout"
+    },
+    "song95.mp3": {
+        "title": "Heavenly Dream by James Pastell",
+        "genre": ""
+    },
+    "song96.mp3": {
+        "title": "Hes a Demon, Hes a Devil, Hes a Doll by Betty Hutton",
+        "genre": "Fallout"
+    },
+    "song97.mp3": {
+        "title": "Hey Lover by The Daughters Of Eve",
+        "genre": ""
+    },
+    "song98.mp3": {
+        "title": "Honey Bop by Wanda Jackson",
+        "genre": ""
+    },
+    "song99.mp3": {
+        "title": "Hot Dog Buddy Buddy by Bill Haley",
+        "genre": "Fallout"
+    },
+    "song100.mp3": {
+        "title": "Hound Dog by Elvis Presley",
+        "genre": ""
+    },
+    "song101.mp3": {
+        "title": "House of the Rising Sun by The Animals",
+        "genre": ""
+    },
+    "song102.mp3": {
+        "title": "I Can Dream, Can't I? by the Andrew Sisters",
+        "genre": "Fallout"
+    },
+    "song103.mp3": {
+        "title": "I Can't Dance I Got Ants In My Pants by Chick Webb",
+        "genre": "Fallout"
+    },
+    "song104.mp3": {
+        "title": "I Didn't Know the Gun Was Loaded by Patsy Montana",
+        "genre": "Fallout"
+    },
+    "song105.mp3": {
+        "title": "I Don't Want to See Tomorrow by Nat King Cole",
+        "genre": "Fallout"
+    },
+    "song106.mp3": {
+        "title": "I Don't Want to Set the World on Fire by The Ink Spots",
+        "genre": "Fallout"
+    },
+    "song107.mp3": {
+        "title": "I Fall In Love Too Easily by Chet Bake",
+        "genre": ""
+    },
+    "song108.mp3": {
+        "title": "I Go to Sleep by Peggy Lee",
+        "genre": ""
+    },
+    "song109.mp3": {
+        "title": "I Only Have Eyes For You by The Flamingos",
+        "genre": ""
+    },
+    "song110.mp3": {
+        "title": "I Put a Spell On You by Screamin' Jay Hawkins",
+        "genre": ""
+    },
+    "song111.mp3": {
+        "title": "I Wonder Why by Dion",
+        "genre": ""
+    },
+    "song112.mp3": {
+        "title": "If I Didn't Care by The Ink Spots",
+        "genre": ""
+    },
+    "song113.mp3": {
+        "title": "If I Give My Heart to You by Doris Day",
+        "genre": ""
+    },
+    "song114.mp3": {
+        "title": "I'll Hold You In My Heart by Eddy Arnold",
+        "genre": ""
+    },
+    "song115.mp3": {
+        "title": "I'm Beginning to See the Light by The Ink Spots",
+        "genre": ""
+    },
+    "song116.mp3": {
+        "title": "I'm Just Wild About Harry by Judy Garland",
+        "genre": ""
+    },
+    "song117.mp3": {
+        "title": "I'm Moving Out by The Roues Brothers",
+        "genre": "Fallout"
+    },
+    "song118.mp3": {
+        "title": "I'm So Blue by Katie Thompson",
+        "genre": "Fallout"
+    },
+    "song119.mp3": {
+        "title": "I'm Sorry by Brenda Lee",
+        "genre": ""
+    },
+    "song120.mp3": {
+        "title": "I'm the Lonesomest Gal in Town by Kay Starr",
+        "genre": ""
+    },
+    "song121.mp3": {
+        "title": "I'm Tickled Pink by Jack Shaindlin",
+        "genre": "Fallout"
+    },
+    "song122.mp3": {
+        "title": "In A Shanty In Old Shanty Town by Johnny Long",
+        "genre": "Fallout"
+    },
+    "song123.mp3": {
+        "title": "In The Mood by Glenn Miller",
+        "genre": "Fallout"
+    },
+    "song124.mp3": {
+        "title": "In the Shadow of the Valley by Western Swing Band",
+        "genre": "Fallout"
+    },
+    "song125.mp3": {
+        "title": "Into Each Life Some Rain Must Fall by Ella Fitzgerald",
+        "genre": "Fallout"
+    },
+    "song126.mp3": {
+        "title": "Is You Is Or Is You Ain't by Louis Jordan",
+        "genre": ""
+    },
+    "song127.mp3": {
+        "title": "It Ain't the Meat, It's the motion by The Swallows",
+        "genre": "Fallout"
+    },
+    "song128.mp3": {
+        "title": "It Was Only a Dream by The Sinseers",
+        "genre": ""
+    },
+    "song129.mp3": {
+        "title": "Itchy Twitchy Feeling by Bobby Hendricks",
+        "genre": ""
+    },
+    "song130.mp3": {
+        "title": "It's a Man by Betty Hutton",
+        "genre": "Fallout"
+    },
+    "song131.mp3": {
+        "title": "It's a Sin by Eddy Arnold",
+        "genre": "Fallout"
+    },
+    "song132.mp3": {
+        "title": "It's a Sin to Tell a Lie by The Ink Spots",
+        "genre": "Fallout"
+    },
+    "song133.mp3": {
+        "title": "It's All Over But the Crying by The Ink Spots",
+        "genre": "Fallout"
+    },
+    "song134.mp3": {
+        "title": "It's been a Long, Long Time by Harry Hames",
+        "genre": ""
+    },
+    "song135.mp3": {
+        "title": "It's Just a Matter of Time by Brook Benton",
+        "genre": "Fallout"
+    },
+    "song136.mp3": {
+        "title": "It's Nobody's Fault but Mine by Blind Willie Johnson",
+        "genre": "Fallout"
+    },
+    "song137.mp3": {
+        "title": "Jazzy Interlude by Billy Munn",
+        "genre": "Fallout"
+    },
+    "song138.mp3": {
+        "title": "Jingle, Jangle, Jingle by Kay Kyser",
+        "genre": "Fallout"
+    },
+    "song139.mp3": {
+        "title": "Johnny B. Goode by Chuck Berry",
+        "genre": ""
+    },
+    "song140.mp3": {
+        "title": "Johnny Guitar by Peggy Lee",
+        "genre": "Fallout"
+    },
+    "song141.mp3": {
+        "title": "Jolly Days by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song142.mp3": {
+        "title": "Jukebox Saturday Night by Glenn Miller",
+        "genre": "Fallout"
+    },
+    "song143.mp3": {
+        "title": "Jumpin' At The Woodside by Count Basie",
+        "genre": "Fallout"
+    },
+    "song144.mp3": {
+        "title": "Jumpin' Jive by Cab Calloway",
+        "genre": ""
+    },
+    "song145.mp3": {
+        "title": "Just a Fair Weather Friend by Henry King",
+        "genre": "Fallout"
+    },
+    "song146.mp3": {
+        "title": "Keep A Knockin' by Louis Jordan",
+        "genre": "Fallout"
+    },
+    "song147.mp3": {
+        "title": "Keep A Knockin' by Milton Brown",
+        "genre": "Fallout"
+    },
+    "song148.mp3": {
+        "title": "Keep That Coffee Hot by Scatman Crothers",
+        "genre": "Fallout, Nsfw"
+    },
+    "song149.mp3": {
+        "title": "Ladyfingers by Herb Alpert",
+        "genre": "Fallout"
+    },
+    "song150.mp3": {
+        "title": "Laughing on the Outside by Bernadette Carroll",
+        "genre": ""
+    },
+    "song151.mp3": {
+        "title": "Lazy Day Blues by Bert Weedon",
+        "genre": "Fallout"
+    },
+    "song152.mp3": {
+        "title": "Let's Go Sunning by Jack Shaindlin",
+        "genre": "Fallout"
+    },
+    "song153.mp3": {
+        "title": "Let's Ride Into the Sunset Together by Western Swing Band",
+        "genre": "Fallout"
+    },
+    "song154.mp3": {
+        "title": "Let's Twist Again by Chubby Checker",
+        "genre": "Fallout"
+    },
+    "song155.mp3": {
+        "title": "Lone Star by Western Swing Band",
+        "genre": "Fallout"
+    },
+    "song156.mp3": {
+        "title": "Lonely Hours by Gene Armstrong",
+        "genre": "Fallout"
+    },
+    "song157.mp3": {
+        "title": "Lonesome Town by Ricky Nelson",
+        "genre": ""
+    },
+    "song158.mp3": {
+        "title": "Love Hurts by Everly Brothers",
+        "genre": ""
+    },
+    "song159.mp3": {
+        "title": "Love Me as Though There Were No Tomorrow by Nat King Cole",
+        "genre": "Fallout"
+    },
+    "song160.mp3": {
+        "title": "Love Potion No.9 by The Clovers",
+        "genre": ""
+    },
+    "song161.mp3": {
+        "title": "Mad About the Boy by Helen Forest",
+        "genre": "Fallout"
+    },
+    "song162.mp3": {
+        "title": "Make the World Go Away by Eddy Arnold",
+        "genre": "Fallout"
+    },
+    "song163.mp3": {
+        "title": "Manhattan by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song164.mp3": {
+        "title": "Massachusetts by Gene Krups",
+        "genre": ""
+    },
+    "song165.mp3": {
+        "title": "Maybe by The Chantels",
+        "genre": ""
+    },
+    "song166.mp3": {
+        "title": "Maybe by The Ink Spots",
+        "genre": "Fallout"
+    },
+    "song167.mp3": {
+        "title": "Midnight In A Madhouse by Chick Webb",
+        "genre": "Fallout"
+    },
+    "song168.mp3": {
+        "title": "Mighty, Mighty Man by Roy Brown",
+        "genre": "Fallout"
+    },
+    "song169.mp3": {
+        "title": "Mr. Five By Five by Ella Mae Morse; Freddie Slack And His Orchestra",
+        "genre": "Fallout"
+    },
+    "song170.mp3": {
+        "title": "Mr. Sandman by The Chordettes",
+        "genre": "Fallout"
+    },
+    "song171.mp3": {
+        "title": "My Girl by The Temptations",
+        "genre": ""
+    },
+    "song172.mp3": {
+        "title": "My Way by Frank Sinatra",
+        "genre": ""
+    },
+    "song173.mp3": {
+        "title": "Ol' Man Mose by Eddy Duchin",
+        "genre": "Fallout"
+    },
+    "song174.mp3": {
+        "title": "One More Tomorrow by Frankie Carle",
+        "genre": "Fallout"
+    },
+    "song175.mp3": {
+        "title": "Only You by The Platters",
+        "genre": "Fallout"
+    },
+    "song176.mp3": {
+        "title": "Opus One by Tommy Dorsey",
+        "genre": "Fallout"
+    },
+    "song177.mp3": {
+        "title": "Orange Colored Sky by Nat King Cole",
+        "genre": "Fallout"
+    },
+    "song178.mp3": {
+        "title": "People Are Strange by The Doors",
+        "genre": ""
+    },
+    "song179.mp3": {
+        "title": "Personality by Johnny Mercer",
+        "genre": "Fallout"
+    },
+    "song180.mp3": {
+        "title": "Pig Foot Pete by Ella Mae Morse",
+        "genre": "Fallout"
+    },
+    "song181.mp3": {
+        "title": "Pistol Packin Mama by Bing Crosby",
+        "genre": "Fallout"
+    },
+    "song182.mp3": {
+        "title": "Polka Dots and Moonbeams by Wes Montgomery",
+        "genre": ""
+    },
+    "song183.mp3": {
+        "title": "Poor Little Fool by Ricky Nelson",
+        "genre": ""
+    },
+    "song184.mp3": {
+        "title": "Powder Your Face With Sunshine by Dean Martin",
+        "genre": ""
+    },
+    "song185.mp3": {
+        "title": "Praise The Lord And Pass The Ammunition by Kay Kyser & His Orchestra",
+        "genre": "Fallout"
+    },
+    "song186.mp3": {
+        "title": "Puppy Love by Paul Anka",
+        "genre": ""
+    },
+    "song187.mp3": {
+        "title": "Put Your Head On My Shoulder by Paul Anka",
+        "genre": ""
+    },
+    "song188.mp3": {
+        "title": "Rhythm For You by Eddy Christiani",
+        "genre": "Fallout"
+    },
+    "song189.mp3": {
+        "title": "Right Behind You Baby by Ray Smith",
+        "genre": "Fallout"
+    },
+    "song190.mp3": {
+        "title": "Ring of Fire by Copilot Music & Sound",
+        "genre": "Fallout"
+    },
+    "song191.mp3": {
+        "title": "Robin in the Pine by Bonnie Guitar",
+        "genre": "Fallout"
+    },
+    "song192.mp3": {
+        "title": "Rock Around the Clock by Bill Haley",
+        "genre": ""
+    },
+    "song193.mp3": {
+        "title": "Rocket 69 by Connie Allen",
+        "genre": "Fallout, Nsfw"
+    },
+    "song194.mp3": {
+        "title": "Round Midnight by Sun Ra",
+        "genre": ""
+    },
+    "song195.mp3": {
+        "title": "Roundhouse Rock by Bert Weedon",
+        "genre": "Fallout"
+    },
+    "song196.mp3": {
+        "title": "Ruby Baby by The Drifters",
+        "genre": ""
+    },
+    "song197.mp3": {
+        "title": "Runaround Sue by Dion",
+        "genre": ""
+    },
+    "song198.mp3": {
+        "title": "Runaway by Del Shannon",
+        "genre": ""
+    },
+    "song199.mp3": {
+        "title": "Running Gun by Marty Robbins",
+        "genre": ""
+    },
+    "song200.mp3": {
+        "title": "Saddle Tramp by Marty Robbins",
+        "genre": ""
+    },
+    "song201.mp3": {
+        "title": "Salt Pork, West Virginia by Louis Jordan & His Tympany Five",
+        "genre": "Fallout"
+    },
+    "song202.mp3": {
+        "title": "Satin Doll by Duke Ellington",
+        "genre": ""
+    },
+    "song203.mp3": {
+        "title": "Secrets by The Dale Sisters",
+        "genre": "Fallout"
+    },
+    "song204.mp3": {
+        "title": "Sh-Boom by The Crew Cuts",
+        "genre": ""
+    },
+    "song205.mp3": {
+        "title": "Shenandoah by Tennessee Ernie Ford",
+        "genre": "Fallout"
+    },
+    "song206.mp3": {
+        "title": "Show Me the Way to Go Home by Julie London",
+        "genre": ""
+    },
+    "song207.mp3": {
+        "title": "Since I Don't Have You by The Skyliners",
+        "genre": ""
+    },
+    "song208.mp3": {
+        "title": "Sit and Dream by Pete Thomas",
+        "genre": "Fallout"
+    },
+    "song209.mp3": {
+        "title": "Sixteen Tons by Merle Travis",
+        "genre": "Fallout"
+    },
+    "song210.mp3": {
+        "title": "Sixteen Tons by Tennessee Ernie Ford",
+        "genre": "Fallout"
+    },
+    "song211.mp3": {
+        "title": "Sixty Minute Man by Billy Ward",
+        "genre": "Fallout"
+    },
+    "song212.mp3": {
+        "title": "Sleep Walk by Santo & Johnny",
+        "genre": ""
+    },
+    "song213.mp3": {
+        "title": "Slow Bounce by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song214.mp3": {
+        "title": "So Doggone Lonesome by Johnny Cash",
+        "genre": "Fallout"
+    },
+    "song215.mp3": {
+        "title": "Some Enchanted Evening by The Castells",
+        "genre": "Fallout"
+    },
+    "song216.mp3": {
+        "title": "Somethings Gotta Give by Bing Crosby",
+        "genre": "Fallout"
+    },
+    "song217.mp3": {
+        "title": "Stagger Lee by Lloyd Price",
+        "genre": ""
+    },
+    "song218.mp3": {
+        "title": "Stardust by Frank Sinatra",
+        "genre": ""
+    },
+    "song219.mp3": {
+        "title": "Stars of the Midnight Range by Johnny Bond",
+        "genre": "Fallout"
+    },
+    "song220.mp3": {
+        "title": "Stay Just A Little Bit Longer by The Zodiacs",
+        "genre": ""
+    },
+    "song221.mp3": {
+        "title": "Steel Guitar Rag by Bob Wills",
+        "genre": "Fallout"
+    },
+    "song222.mp3": {
+        "title": "Straighten Up And Fly Right by The Andrews Sisters",
+        "genre": "Fallout"
+    },
+    "song223.mp3": {
+        "title": "Strangers In the Night by Frank Sinatra",
+        "genre": ""
+    },
+    "song224.mp3": {
+        "title": "Summer in Love by I Marc 4",
+        "genre": "Fallout"
+    },
+    "song225.mp3": {
+        "title": "Sway by Dean Martin",
+        "genre": ""
+    },
+    "song226.mp3": {
+        "title": "Swing Doors by Allan Gray",
+        "genre": "Fallout"
+    },
+    "song227.mp3": {
+        "title": "Swinging on a Star by Bing Crosby",
+        "genre": ""
+    },
+    "song228.mp3": {
+        "title": "Take Me Home, Country Roads by Spank",
+        "genre": "Fallout"
+    },
+    "song229.mp3": {
+        "title": "Tennessee Waltz by Patti Page",
+        "genre": ""
+    },
+    "song230.mp3": {
+        "title": "That's the Good Old Sunny South by Emmett Miller",
+        "genre": ""
+    },
+    "song231.mp3": {
+        "title": "The Balad of Paladin by Johnny Western",
+        "genre": ""
+    },
+    "song232.mp3": {
+        "title": "The Book of Love by The Monotones",
+        "genre": ""
+    },
+    "song233.mp3": {
+        "title": "The End of the World by Skeeter Davis",
+        "genre": "Fallout"
+    },
+    "song234.mp3": {
+        "title": "The Jitterbug Waltz by Fats Waller",
+        "genre": ""
+    },
+    "song235.mp3": {
+        "title": "The Masters Call by Marty Robbins",
+        "genre": ""
+    },
+    "song236.mp3": {
+        "title": "The Queen Bee by Count Basie",
+        "genre": ""
+    },
+    "song237.mp3": {
+        "title": "The Wanderer by Dion",
+        "genre": "Fallout"
+    },
+    "song238.mp3": {
+        "title": "The World Is Waiting For the Sunrise by Les Paul",
+        "genre": ""
+    },
+    "song239.mp3": {
+        "title": "This is Romance by Tommy Dorsey",
+        "genre": ""
+    },
+    "song240.mp3": {
+        "title": "Time in a Bottle by Jim Croce",
+        "genre": ""
+    },
+    "song241.mp3": {
+        "title": "Tonight You Belong to Me by Patience and Prudence",
+        "genre": ""
+    },
+    "song242.mp3": {
+        "title": "Tumbling Tumbleweeds by Sons of the Pioneers",
+        "genre": ""
+    },
+    "song243.mp3": {
+        "title": "Tweedle Dee by LaVern Baker",
+        "genre": "Fallout"
+    },
+    "song244.mp3": {
+        "title": "Two Left Hands by Freddie Slack",
+        "genre": "Fallout"
+    },
+    "song245.mp3": {
+        "title": "Undecided by Ella Fitzgerald",
+        "genre": "Fallout"
+    },
+    "song246.mp3": {
+        "title": "Under a Blanket of Blue by Helen Forest",
+        "genre": ""
+    },
+    "song247.mp3": {
+        "title": "Uranium by The Commodores",
+        "genre": "Fallout"
+    },
+    "song248.mp3": {
+        "title": "Uranium Fever by Elton Britt",
+        "genre": "Fallout"
+    },
+    "song249.mp3": {
+        "title": "Uranium Rock by Warren Smith",
+        "genre": "Fallout"
+    },
+    "song250.mp3": {
+        "title": "Vagabond Shoes by Kay Starr",
+        "genre": ""
+    },
+    "song251.mp3": {
+        "title": "Volare by Dean Martin",
+        "genre": "Fallout"
+    },
+    "song252.mp3": {
+        "title": "Von Spanien Nach S\u00fcdamerika by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song253.mp3": {
+        "title": "Wake up Little Susie by Everly Brothers",
+        "genre": ""
+    },
+    "song254.mp3": {
+        "title": "Walking The Floor Over You by Ernest Tubb",
+        "genre": "Fallout"
+    },
+    "song255.mp3": {
+        "title": "Was That the Human Thing to Do by Kay Starr",
+        "genre": ""
+    },
+    "song256.mp3": {
+        "title": "Way Back Home by Bob Crosby",
+        "genre": "Fallout"
+    },
+    "song257.mp3": {
+        "title": "We Belong Together by Ritchie Valens",
+        "genre": ""
+    },
+    "song258.mp3": {
+        "title": "We Three by The Ink Spots",
+        "genre": "Fallout"
+    },
+    "song259.mp3": {
+        "title": "Well Meet Again by The Ink Spots",
+        "genre": "Fallout"
+    },
+    "song260.mp3": {
+        "title": "What a Difference a Day Makes by Dinah Washington",
+        "genre": "Fallout"
+    },
+    "song261.mp3": {
+        "title": "What Do You Know About Love by Russ Morgan",
+        "genre": ""
+    },
+    "song262.mp3": {
+        "title": "What To Do by Buddy Holly",
+        "genre": "Fallout"
+    },
+    "song263.mp3": {
+        "title": "Wheel of Fortune by Kay Starr",
+        "genre": ""
+    },
+    "song264.mp3": {
+        "title": "When I Get Low I Get High by Chick Webb And His Orchestra",
+        "genre": "Fallout"
+    },
+    "song265.mp3": {
+        "title": "Where Have You Been All My Life? by Jeff Hooper",
+        "genre": "Fallout"
+    },
+    "song266.mp3": {
+        "title": "Who Do You Suppose by Connie Conway",
+        "genre": "Fallout"
+    },
+    "song267.mp3": {
+        "title": "Whole Lotta Shakin Goin On by Big Maybelle",
+        "genre": "Fallout"
+    },
+    "song268.mp3": {
+        "title": "Whos Sorry Now by Connie Francis",
+        "genre": ""
+    },
+    "song269.mp3": {
+        "title": "Why Don't You Do Right? by Peggy Lee",
+        "genre": "Fallout"
+    },
+    "song270.mp3": {
+        "title": "Wonderland By Night by Bert Kaempfert",
+        "genre": ""
+    },
+    "song271.mp3": {
+        "title": "Wonderland Romance by Gerhard Trede",
+        "genre": "Fallout"
+    },
+    "song272.mp3": {
+        "title": "Working For the Man by Roy Orbison",
+        "genre": "Fallout"
+    },
+    "song273.mp3": {
+        "title": "Worry Worry Worry by The Three Suns",
+        "genre": "Fallout"
+    },
+    "song274.mp3": {
+        "title": "Wouldn't It Be Nice by The Beach Boys",
+        "genre": "Fallout"
+    },
+    "song275.mp3": {
+        "title": "You Belong to Me by Jo Stafford",
+        "genre": "Fallout"
+    },
+    "song276.mp3": {
+        "title": "You Send Me by Sam Cooke",
+        "genre": ""
+    },
+    "song277.mp3": {
+        "title": "You'll Never Never Know by The Platters",
+        "genre": ""
+    },
+    "song278.mp3": {
+        "title": "You're Everything by The Danleers",
+        "genre": "Fallout"
+    },
+    "song279.mp3": {
+        "title": "You're Gonna Miss Me by Connie Francis",
+        "genre": ""
+    },
+    "song280.mp3": {
+        "title": "You're Nobody 'Till Somebody Loves You by Dean Martin",
+        "genre": ""
+    },
+    "song281.mp3": {
+        "title": "You're The Top by Cole Porter",
+        "genre": ""
+    }
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlightened Radio</title>
+</head>
+
+<body>
+    <h1>Enlightened Radio</h1>
+    <audio id="audio-player" controls autoplay></audio>
+
+    <script>
+        const songsFolder = 'Songs/';
+        const adsFolder = 'Ads/';
+        const hostFolder = 'VoiceLines/'; // Folder for voice lines
+        const introFile = 'intro.mp3'; // Your introduction file
+
+        // Generating songs from song1.mp3 to song281.mp3
+        const songs = [];
+        for (let i = 1; i <= 266; i++) {
+            songs.push(`song${i}.mp3`);
+        }
+
+        // Generating ads from ad1.mp3 to ad125.mp3
+        const ads = [];
+        for (let i = 1; i <= 128; i++) {
+            ads.push(`ad${i}.mp3`);
+        }
+
+        // Mapping songs to their respective voice lines
+        const songVoiceLines = {
+            'song1.mp3': ['host_line1.mp3', 'host_line2.mp3'],
+            'song2.mp3': ['host_line3.mp3'],
+            // Add more mappings as needed
+            'song3.mp3': ['host_line4.mp3', 'host_line5.mp3'],
+            // ...
+        };
+
+        let currentSongCount = 0;
+        let lastSongPlayed = '';
+        let playedSongs = [];
+
+        function getRandomSong(array) {
+            if (array.length === 0) {
+                playedSongs = [];
+                return getRandomSong(songs);
+            }
+            const randomIndex = Math.floor(Math.random() * array.length);
+            return array[randomIndex];
+        }
+
+        function playHostLine(song) {
+            const audioPlayer = document.getElementById('audio-player');
+            const voiceLines = songVoiceLines[song] || []; // Get associated voice lines
+            if (voiceLines.length > 0) {
+                const nextHostLine = getRandomSong(voiceLines); // Randomly select a voice line
+                audioPlayer.src = hostFolder + nextHostLine;
+                audioPlayer.play();
+            }
+        }
+
+        function playNext() {
+            let audioPlayer = document.getElementById('audio-player');
+
+            if (currentSongCount < 2) {
+                let nextSong = getRandomSong(songs.filter(song => !playedSongs.includes(song)));
+                audioPlayer.src = songsFolder + nextSong;
+
+                lastSongPlayed = nextSong;
+                playedSongs.push(nextSong);
+                currentSongCount++;
+
+                // Play the corresponding host line for the song
+                playHostLine(nextSong);
+            } else {
+                const nextAd = getRandomSong(ads);
+                audioPlayer.src = adsFolder + nextAd;
+                currentSongCount = 0;
+            }
+
+            audioPlayer.play();
+        }
+
+        function playIntroduction() {
+            const audioPlayer = document.getElementById('audio-player');
+            audioPlayer.src = introFile; // Set the source to the introduction file
+            audioPlayer.play(); // Play the introduction
+
+            // Once the introduction ends, start playing music
+            audioPlayer.addEventListener('ended', playNext);
+        }
+
+        // Start with the introduction
+        playIntroduction();
+    </script>
+</body>
+
+</html>
