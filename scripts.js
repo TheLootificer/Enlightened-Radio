@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v3.3.1";
+const RADIO_VERSION = "v3.4.1";
 
 const songsFolder = 'Songs/';
 const adsFolder = 'Ads/';
@@ -6,20 +6,20 @@ const playsFolder = 'Plays/';
 const hostFolder = 'VoiceLines/';
 const introFile = 'intro.mp3';
 
-const songs = Array.from({ length: 268 }, (_, i) => `song${i + 1}.mp3`);
-const ads = Array.from({ length: 44 }, (_, i) => `ad${i + 1}.mp3`);
+const songs = Array.from({ length: 293 }, (_, i) => `song${i + 1}.mp3`);
+const ads = Array.from({ length: 45 }, (_, i) => `ad${i + 1}.mp3`);
 const plays = Array.from({ length: 41 }, (_, i) => `play${i + 1}.mp3`);
 
 const preVoiceLines = {
   'song26.mp3': ['voice4.mp3'],
   'song54.mp3': ['voice5.mp3'],
-  'song233.mp3': ['voice6.mp3'],
+  'song241.mp3': ['voice6.mp3'],
 };
 
 const postVoiceLines = {
   'song106.mp3': ['voice3.mp3'],
-  'song118.mp3': ['voice1.mp3'],
-  'song177.mp3': ['voice2.mp3'],
+  'song119.mp3': ['voice1.mp3'],
+  'song180.mp3': ['voice2.mp3'],
 };
 
 let radioOn = false;
@@ -165,7 +165,7 @@ document.addEventListener('visibilitychange', () => {
     }
     // If we should be playing but aren't, recover
     if (radioOn && audioElement.paused && audioElement.src) {
-      audioElement.play().catch(() => {});
+      audioElement.play().catch(() => { });
     }
   }
 });
@@ -189,7 +189,7 @@ function handleModifierToggle() {
   if (radioOn) {
     clearQueue();
     // Fill it immediately so next track evaluates new criteria
-    fillQueue(); 
+    fillQueue();
   }
 }
 
@@ -261,21 +261,18 @@ function fillQueue() {
         playedSongs = [];
         unplayedSongs = getFilteredList([...songs], 'song');
       }
-      if (unplayedSongs.length === 0) break; 
-      
+      if (unplayedSongs.length === 0) break;
+
       let nextSong = getRandomItem(unplayedSongs);
       lastSongPlayed = nextSong;
       playedSongs.push(nextSong);
       currentSongCount++;
-      
+
       const displayTitle = songTitles[nextSong] ? songTitles[nextSong].title : nextSong;
-      let title = displayTitle, artist = "Unknown Artist";
-      const lastByIndex = displayTitle.lastIndexOf(" by ");
-      if (lastByIndex !== -1) {
-        title = displayTitle.substring(0, lastByIndex);
-        artist = displayTitle.substring(lastByIndex + 4);
-      }
-      
+      const songInfo = songTitles[nextSong] || {};
+      const title = songInfo.title || displayTitle;
+      const artist = songInfo.artist || "Unknown Artist";
+
       if (shouldPlayVoiceLine(nextSong)) {
         let preLines = preVoiceLines[nextSong] || [];
         if (preLines.length > 0) {
@@ -290,16 +287,16 @@ function fillQueue() {
           });
         }
       }
-      
+
       mediaQueue.push({
         url: songsFolder + nextSong,
         type: 'song',
-        displayTitle: `Now Playing: ${displayTitle}`,
+        displayTitle: `Now Playing: ${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`,
         mediaTitle: title,
         mediaArtist: artist,
         originalFile: nextSong
       });
-      
+
       if (shouldPlayVoiceLine(nextSong)) {
         let postLines = postVoiceLines[nextSong] || [];
         if (postLines.length > 0) {
@@ -319,11 +316,11 @@ function fillQueue() {
         currentSongCount = 0;
         continue;
       }
-      
+
       let nextSource = null;
       let type = '';
       let dTitle = '';
-      
+
       if (currentSeries === null) {
         if (Math.random() < 0.2) {
           currentSeries = getRandomItem(playSeries);
@@ -347,12 +344,12 @@ function fillQueue() {
           nextSeriesIndex = 0;
         }
       }
-      
+
       if (!nextSource) {
         currentSongCount = 0;
         continue;
       }
-      
+
       if (type === 'play') {
         dTitle = adTitles.plays[nextSource] ? adTitles.plays[nextSource].title : nextSource;
         mediaQueue.push({
@@ -377,7 +374,7 @@ function fillQueue() {
       currentSongCount = 0;
     }
   }
-  
+
   // Trigger eager preload using HTML5 Audio element caching
   mediaQueue.forEach(item => {
     if (!item.preloader) {
@@ -391,21 +388,21 @@ function fillQueue() {
 function playFromQueue() {
   isAdvancing = false;
   if (!radioOn) return;
-  fillQueue(); 
-  
+  fillQueue();
+
   if (mediaQueue.length === 0) {
     setTimeout(playFromQueue, 1000);
     return;
   }
-  
+
   const nextItem = mediaQueue.shift();
   fillQueue(); // Trigger buffer of the next media
-  
+
   updateNowPlaying(nextItem.displayTitle);
   updateMediaSession(nextItem.mediaTitle, nextItem.mediaArtist);
-  
+
   audioElement.src = nextItem.url;
-  
+
   if (nextItem.type === 'voice' || nextItem.type === 'intro') {
     bandpass.disconnect();
     distortion.disconnect();
@@ -421,7 +418,7 @@ function playFromQueue() {
     distortion.connect(musicGain);
     musicGain.connect(audioContext.destination);
   }
-  
+
   audioElement.play().catch(e => console.error("Playback failed:", e));
 }
 
@@ -444,7 +441,7 @@ function playIntroduction() {
   voiceDistortion.connect(voiceGain);
   voiceGain.connect(audioContext.destination);
   audioElement.play().catch(() => { });
-  
+
   fillQueue(); // Begin eagerly caching future tracks immediately!
 }
 
@@ -472,7 +469,7 @@ function updateMediaSession(title, artist) {
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', () => {
     if (!radioOn) powerOn();
-    else audioContext.resume().then(() => audioElement.play().catch(() => {}));
+    else audioContext.resume().then(() => audioElement.play().catch(() => { }));
   });
   navigator.mediaSession.setActionHandler('pause', () => powerOff());
   navigator.mediaSession.setActionHandler('stop', () => powerOff());
@@ -536,15 +533,12 @@ function powerOn() {
       if (src) {
         if (src.includes(songsFolder)) {
           const songFile = src.split('/').pop();
-          const displayTitle = songTitles[songFile] ? songTitles[songFile].title : songFile;
-          updateNowPlaying(`Now Playing: ${displayTitle}`);
+          const songInfo = songTitles[songFile] || {};
+          const title = songInfo.title || songFile;
+          const artist = songInfo.artist || "Unknown Artist";
+          const nowPlaying = `Now Playing: ${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`;
+          updateNowPlaying(nowPlaying);
 
-          let title = displayTitle, artist = "Unknown Artist";
-          const lastByIndex = displayTitle.lastIndexOf(" by ");
-          if (lastByIndex !== -1) {
-            title = displayTitle.substring(0, lastByIndex);
-            artist = displayTitle.substring(lastByIndex + 4);
-          }
           updateMediaSession(title, artist);
         } else if (src.includes(adsFolder)) {
           const adFile = src.split('/').pop();
@@ -637,7 +631,7 @@ function saveState() {
     currentSrc: audioElement.src,
     currentTime: audioElement.currentTime,
     nowPlayingText: document.getElementById('now-playing').textContent,
-    mediaQueue: mediaQueue.map(item => ({...item, preloader: null})), // Can't serialize Audio object
+    mediaQueue: mediaQueue.map(item => ({ ...item, preloader: null })), // Can't serialize Audio object
     // Modifiers
     immersiveMode: document.getElementById('immersiveMode')?.checked || false,
     falloutMode: document.getElementById('falloutMode')?.checked || false,
@@ -667,7 +661,7 @@ function loadState() {
     lastSongPlayed = state.lastSongPlayed || '';
     currentSeries = state.currentSeries || null;
     nextSeriesIndex = state.nextSeriesIndex || 0;
-    
+
     mediaQueue = state.mediaQueue || [];
     mediaQueue.forEach(item => {
       item.preloader = new Audio();
@@ -717,7 +711,7 @@ function checkVersion() {
         document.getElementById('updateModal').classList.add('show');
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 // Filters Dropdown Toggle
