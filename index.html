@@ -103,21 +103,115 @@
       box-shadow: 0 0 5px rgba(123, 44, 191, 0.8), inset 0 0 5px rgba(123, 44, 191, 0.5);
     }
 
-    .kofi-link {
+    .contact-button {
       display: inline-block;
       margin-top: 1.5rem;
       font-size: 0.8rem;
       color: #9d4edd;
-      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
       opacity: 0.7;
       transition: opacity 0.3s ease, text-shadow 0.3s ease;
       border-bottom: 1px dotted #9d4edd;
+      font-family: inherit;
+      padding: 0;
     }
 
-    .kofi-link:hover {
+    .contact-button:hover {
       opacity: 1;
       text-shadow: 0 0 8px #c77dff;
       border-bottom: 1px solid #9d4edd;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: radial-gradient(circle at top left, #1a1a1a, #0a0a0a);
+      border: 2px solid #7b2cbf;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(123, 44, 191, 0.6), inset 0 0 20px rgba(123, 44, 191, 0.1);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      font-size: 1.5rem;
+      color: #e0aaff;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px #7b2cbf;
+    }
+
+    .modal-email {
+      font-size: 1rem;
+      color: #c77dff;
+      margin: 1rem 0;
+      word-break: break-all;
+      padding: 1rem;
+      background: rgba(123, 44, 191, 0.1);
+      border-radius: 8px;
+      border: 1px solid #5a189a;
+    }
+
+    .modal-close {
+      background: transparent;
+      color: #9d4edd;
+      border: 1px solid #5a189a;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: #240046;
+      border-color: #7b2cbf;
+      color: #e0aaff;
+      box-shadow: 0 0 10px rgba(123, 44, 191, 0.4);
     }
 
     .reset-button {
@@ -254,9 +348,18 @@
     <audio id="audio-player" controls></audio>
 
     <div class="footer-controls">
-      <a href="https://ko-fi.com/thelootificer" target="_blank" class="kofi-link" title="Support the station">☕ Buy me a
-        Nuka-Cola</a>
+      <button onclick="openContactModal()" class="contact-button" title="Contact the station">✉ Contact</button>
       <button onclick="resetRadio()" class="reset-button" title="Clear saved data and reload">⚠ System Reset</button>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal" onclick="closeContactModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">📧 Contact Us</div>
+        <p style="color: #aaaaaa; margin: 0.5rem 0;">Send us an email:</p>
+        <div class="modal-email">wiselucien@enlightened-radio.org</div>
+        <button onclick="closeContactModal()" class="modal-close">Close</button>
+      </div>
     </div>
 
   </div>
@@ -276,6 +379,23 @@
         powerLed.style.background = '#222';
         powerLed.style.boxShadow = '0 0 8px #000';
         if (typeof powerOff === 'function') powerOff();
+      }
+    });
+
+    function openContactModal() {
+      document.getElementById('contactModal').classList.add('show');
+    }
+
+    function closeContactModal(event) {
+      if (!event || event.target.id === 'contactModal') {
+        document.getElementById('contactModal').classList.remove('show');
+      }
+    }
+
+    // Close modal when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeContactModal();
       }
     });
 
