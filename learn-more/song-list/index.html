@@ -77,7 +77,7 @@
     <h1>Song List</h1>
     <div class="subtitle" id="songCount">Loading songs…</div>
     <ul class="song-list" id="songList"></ul>
-    <a class="back-link" href="index.html">← Back to Learn More</a>
+    <a class="back-link" href="../">← Back to Learn More</a>
   </div>
 
   <script>
@@ -86,7 +86,7 @@
       const countElement = document.getElementById('songCount');
 
       try {
-        const response = await fetch('../song_titles.json');
+        const response = await fetch('../../song_titles.json');
         if (!response.ok) throw new Error('Unable to load song data');
         const songs = await response.json();
 
