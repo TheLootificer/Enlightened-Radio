@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entry Template | Enlightened Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <a class="back-link" href="../index.html">← Back to Lore</a>
+
+    <header class="entry-header">
+      <p class="entry-kicker">Journal Entry</p>
+      <h1>{{ENTRY_TITLE}}</h1>
+      <p class="entry-meta">{{ENTRY_DATE}} • {{ENTRY_AUTHOR}}</p>
+    </header>
+
+    <div class="entry-intro">
+      {{ENTRY_INTRO}}
+      <div class="audio-player">
+        <audio controls preload="none">
+          <source src="{{ENTRY_AUDIO_URL}}" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </div>
+
+    <article class="entry-body">
+      <p>{{PARAGRAPH_1}}</p>
+      <p>{{PARAGRAPH_2}}</p>
+      <p>{{PARAGRAPH_3}}</p>
+    </article>
+  </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Song List | Enlightened Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050505;
+      color: #aaaaaa;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    .page {
+      width: min(760px, 100%);
+      background: radial-gradient(circle at top left, #1a1a1a, #0a0a0a);
+      border: 2px solid #222222;
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 0 35px rgba(123, 44, 191, 0.5), inset 0 0 20px rgba(123, 44, 191, 0.15);
+    }
+    h1 {
+      margin-top: 0;
+      color: #e0e0e0;
+      text-shadow: 0 0 10px #7b2cbf, 0 0 20px #7b2cbf;
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      color: #9d4edd;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .song-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.6rem;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 0.35rem;
+    }
+    .song-list li {
+      background: rgba(123, 44, 191, 0.08);
+      border: 1px solid #5a189a;
+      border-radius: 10px;
+      padding: 0.7rem 0.8rem;
+      line-height: 1.45;
+      color: #cfcfcf;
+    }
+    .song-list strong {
+      color: #e0aaff;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    .song-list span {
+      color: #9d4edd;
+      font-size: 0.85rem;
+    }
+    a { color: #c77dff; text-decoration: none; }
+    .back-link { display: inline-block; margin-top: 1rem; color: #9d4edd; border-bottom: 1px dotted #9d4edd; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Song List</h1>
+    <div class="subtitle" id="songCount">Loading songs…</div>
+    <ul class="song-list" id="songList"></ul>
+    <a class="back-link" href="index.html">← Back to Learn More</a>
+  </div>
+
+  <script>
+    async function loadSongs() {
+      const listElement = document.getElementById('songList');
+      const countElement = document.getElementById('songCount');
+
+      try {
+        const response = await fetch('../song_titles.json');
+        if (!response.ok) throw new Error('Unable to load song data');
+        const songs = await response.json();
+
+        const entries = Object.entries(songs);
+        countElement.textContent = `${entries.length} songs available`;
+
+        entries.forEach(([fileName, details]) => {
+          const li = document.createElement('li');
+          const title = details.title || fileName;
+          const artist = details.artist ? ` — ${details.artist}` : '';
+
+          li.innerHTML = `<strong>${title}</strong><span>${artist}</span>`;
+          listElement.appendChild(li);
+        });
+      } catch (error) {
+        countElement.textContent = 'Unable to load songs right now.';
+        listElement.innerHTML = '<li><strong>Song data could not be loaded.</strong></li>';
+        console.error(error);
+      }
+    }
+
+    loadSongs();
+  </script>
+</body>
+</html>
