@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.0.3";
+const RADIO_VERSION = "v4.1.0";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
@@ -15,12 +15,17 @@ const preVoiceLines = {
   'song26.mp3': ['voice4.mp3'],
   'song54.mp3': ['voice5.mp3'],
   'song241.mp3': ['voice6.mp3'],
+  'song215.mp3': ['voice7.mp3'],
+  'song21.mp3': ['voice9.mp3'],
+  'song180.mp3': ['voice10.mp3'],
 };
 
 const postVoiceLines = {
   'song106.mp3': ['voice3.mp3'],
   'song119.mp3': ['voice1.mp3'],
   'song180.mp3': ['voice2.mp3'],
+  'song235.mp3': ['voice8.mp3'],
+  'song44.mp3': ['voice11.mp3'],
 };
 
 let radioOn = false;
