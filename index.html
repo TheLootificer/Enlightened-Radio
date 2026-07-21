@@ -116,6 +116,7 @@
       border-bottom: 1px dotted #9d4edd;
       font-family: inherit;
       padding: 0;
+      text-decoration: none;
     }
 
     .contact-button:hover {
@@ -348,18 +349,8 @@
     <audio id="audio-player" controls></audio>
 
     <div class="footer-controls">
-      <button onclick="openContactModal()" class="contact-button" title="Contact the station">✉ Contact</button>
+      <a href="/learn-more/index.html" target="_blank" rel="noopener noreferrer" class="contact-button" title="Learn more about Enlightened Radio">Learn More</a>
       <button onclick="resetRadio()" class="reset-button" title="Clear saved data and reload">⚠ System Reset</button>
-    </div>
-
-    <!-- Contact Modal -->
-    <div id="contactModal" class="modal" onclick="closeContactModal(event)">
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header">📧 Contact Us</div>
-        <p style="color: #aaaaaa; margin: 0.5rem 0;">Send us an email:</p>
-        <div class="modal-email">wiselucien@enlightened-radio.org</div>
-        <button onclick="closeContactModal()" class="modal-close">Close</button>
-      </div>
     </div>
 
     <!-- Update Available Modal -->
