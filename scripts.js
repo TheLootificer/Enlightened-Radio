@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v3.4.1";
+const RADIO_VERSION = "v4.0.1";
 
 const songsFolder = 'Songs/';
 const adsFolder = 'Ads/';
