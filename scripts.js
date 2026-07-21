@@ -1,4 +1,5 @@
-const RADIO_VERSION = "v4.0.1";
+const RADIO_VERSION = "v4.0.2";
+const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
 const adsFolder = 'Ads/';
@@ -696,10 +697,19 @@ function loadState() {
 }
 
 
+function markVersionAsSeen(version) {
+  try {
+    localStorage.setItem(VERSION_STORAGE_KEY, version);
+  } catch (error) {
+    console.warn('Could not save version state:', error);
+  }
+}
+
 function resetRadio() {
   isResetting = true;
   localStorage.removeItem('radioState');
   localStorage.removeItem('radioVolume'); // Optional: reset volume too? Maybe keep volume.
+  markVersionAsSeen(RADIO_VERSION);
   location.reload();
 }
 
@@ -707,8 +717,18 @@ function checkVersion() {
   fetch('version.json', { cache: 'no-store' })
     .then(res => res.json())
     .then(data => {
-      if (data.version && data.version !== RADIO_VERSION) {
-        document.getElementById('updateModal').classList.add('show');
+      const remoteVersion = data.version;
+      if (!remoteVersion) return;
+
+      const lastSeenVersion = localStorage.getItem(VERSION_STORAGE_KEY);
+
+      if (remoteVersion !== RADIO_VERSION) {
+        if (lastSeenVersion !== remoteVersion) {
+          document.getElementById('updateModal')?.classList.add('show');
+          markVersionAsSeen(remoteVersion);
+        }
+      } else {
+        markVersionAsSeen(remoteVersion);
       }
     })
     .catch(() => { });
