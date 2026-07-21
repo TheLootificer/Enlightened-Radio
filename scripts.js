@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.1.0";
+const RADIO_VERSION = "v4.1.1";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
