@@ -1,11 +1,11 @@
-const RADIO_VERSION = "v4.2.0";
+const RADIO_VERSION = "v4.2.1";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
-const songsFolder = 'Songs/';
-const adsFolder = 'Ads/';
-const playsFolder = 'Plays/';
-const hostFolder = 'VoiceLines/';
-const introFile = 'intro.mp3';
+const songsFolder = '/Songs/';
+const adsFolder = '/Ads/';
+const playsFolder = '/Plays/';
+const hostFolder = '/VoiceLines/';
+const introFile = '/intro.mp3';
 
 const songs = Array.from({ length: 293 }, (_, i) => `song${i + 1}.mp3`);
 const ads = Array.from({ length: 45 }, (_, i) => `ad${i + 1}.mp3`);
@@ -280,7 +280,7 @@ function getFilteredList(list, type) {
 function fillQueue() {
   // Keep a larger buffer because a song block can expand to multiple queued items
   // when it has pre/post voice lines, and we still need room for the next ad/play.
-  while (mediaQueue.length < 4) {
+  while (mediaQueue.length < 6) {
     if (currentSongCount < 2) {
       let unplayedSongs = getFilteredList(songs.filter(song => !playedSongs.includes(song)), 'song');
       if (unplayedSongs.length === 0) {
@@ -416,6 +416,7 @@ function playFromQueue() {
   fillQueue();
 
   if (mediaQueue.length === 0) {
+    isAdvancing = false;
     setTimeout(playFromQueue, 1000);
     return;
   }
@@ -487,6 +488,11 @@ function playFromQueue() {
 
   // Listen for canplay before starting playback
   audioElement.addEventListener('canplay', startPlaybackHandler);
+
+  // If already loaded (preloader cached it), fire immediately
+  if (audioElement.readyState >= 2) {
+    startPlaybackHandler();
+  }
 }
 
 // Example usage for Immersive Mode:
