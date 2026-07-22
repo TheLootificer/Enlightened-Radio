@@ -1,11 +1,11 @@
 const RADIO_VERSION = "v4.2.2";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
-const songsFolder = 'Songs/';  // ← Removed leading slash
-const adsFolder = 'Ads/';      // ← Removed leading slash
-const playsFolder = 'Plays/';  // ← Removed leading slash
-const hostFolder = 'VoiceLines/';  // ← Removed leading slash
-const introFile = 'intro.mp3';     // ← Removed leading slash
+const songsFolder = 'Songs/';
+const adsFolder = 'Ads/';
+const playsFolder = 'Plays/';
+const hostFolder = 'VoiceLines/';
+const introFile = 'intro.mp3';
 
 const songs = Array.from({ length: 293 }, (_, i) => `song${i + 1}.mp3`);
 const ads = Array.from({ length: 45 }, (_, i) => `ad${i + 1}.mp3`);
@@ -36,23 +36,22 @@ let playedSongs = [];
 let songTitles = {};
 
 const playSeries = [
-  ['play1.mp3', 'play2.mp3'], // Curse of the Wendigo
-  ['play3.mp3', 'play4.mp3'], // The Beast of Grafton
-  ['play5.mp3', 'play6.mp3'], // Who Goes There?
-  ['play7.mp3', 'play8.mp3'], // Sideshow Snallygaster
-  ['play9.mp3', 'play10.mp3'], // The Mothman Cometh
-  ['play11.mp3', 'play12.mp3', 'play13.mp3', 'play14.mp3', 'play15.mp3', 'play16.mp3'], // Heart of Steel
-  ['play17.mp3', 'play18.mp3', 'play19.mp3', 'play20.mp3'], // Escape from the 42nd Century
-  ['play21.mp3', 'play22.mp3', 'play23.mp3', 'play24.mp3', 'play25.mp3'], // Nuka World Radio Show
-  ['play27.mp3', 'play26.mp3', 'play28.mp3', 'play29.mp3'], // Astounding Awesome Tales
-  ['play30.mp3', 'play31.mp3', 'play32.mp3', 'play33.mp3', 'play34.mp3'], // A Better Life Underground
-  ['play35.mp3', 'play36.mp3', 'play37.mp3', 'play38.mp3', 'play39.mp3', 'play40.mp3', 'play41.mp3'], // Zorbo's Revenge
+  ['play1.mp3', 'play2.mp3'],
+  ['play3.mp3', 'play4.mp3'],
+  ['play5.mp3', 'play6.mp3'],
+  ['play7.mp3', 'play8.mp3'],
+  ['play9.mp3', 'play10.mp3'],
+  ['play11.mp3', 'play12.mp3', 'play13.mp3', 'play14.mp3', 'play15.mp3', 'play16.mp3'],
+  ['play17.mp3', 'play18.mp3', 'play19.mp3', 'play20.mp3'],
+  ['play21.mp3', 'play22.mp3', 'play23.mp3', 'play24.mp3', 'play25.mp3'],
+  ['play27.mp3', 'play26.mp3', 'play28.mp3', 'play29.mp3'],
+  ['play30.mp3', 'play31.mp3', 'play32.mp3', 'play33.mp3', 'play34.mp3'],
+  ['play35.mp3', 'play36.mp3', 'play37.mp3', 'play38.mp3', 'play39.mp3', 'play40.mp3', 'play41.mp3'],
 ];
 
 let currentSeries = null;
 let nextSeriesIndex = 0;
 
-// Module-scope handler so removeEventListener can actually find it
 let startPlaybackHandler = null;
 let stallTimeout = null;
 
@@ -68,15 +67,13 @@ fetch('ad_titles.json')
 const audioElement = document.getElementById('audio-player');
 const volumeSlider = document.getElementById('volumeSlider');
 
-// Restore saved volume
 const savedVolume = localStorage.getItem('radioVolume');
 if (savedVolume !== null) {
   volumeSlider.value = savedVolume;
 }
-const nowPlayingDisplay = document.getElementById('now-playing');
 
 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-let audioContext = null;  // ← Created on-demand, not at load time
+let audioContext = null;
 
 function getAudioContext() {
     if (!audioContext) {
@@ -85,7 +82,6 @@ function getAudioContext() {
     return audioContext;
 }
 
-// Global node references - initialized in powerOn() when context exists
 let sourceNode = null;
 let bandpass = null;
 let distortion = null;
@@ -118,7 +114,6 @@ audioElement.addEventListener('play', () => {
   }
 });
 
-// Set ended handler ONCE, permanently
 audioElement.addEventListener('ended', () => {
   audioElement._watchdogFired = false;
   if (radioOn && !isAdvancing) {
@@ -127,7 +122,6 @@ audioElement.addEventListener('ended', () => {
   }
 });
 
-// Watchdog: catches missed 'ended' events when screen is off
 setInterval(() => {
   if (!radioOn || isAdvancing) return;
 
@@ -217,7 +211,6 @@ function isFamilyFriendlyMode() {
 }
 
 function getFilteredList(list, type) {
-  const falloutMode = document.getElementById('falloutMode');
   const familyFriendly = isFamilyFriendlyMode();
 
   let filtered = list;
@@ -230,15 +223,6 @@ function getFilteredList(list, type) {
     });
   }
 
-  if (falloutMode && falloutMode.checked) {
-    if (type === 'song') {
-      filtered = filtered.filter(item => {
-        const info = songTitles[item];
-        const genres = info && info.genre ? info.genre.split(',').map(g => g.trim().toLowerCase()) : [];
-        return genres.includes('fallout');
-      });
-    }
-  }
   return filtered;
 }
 
@@ -318,7 +302,7 @@ function fillQueue() {
           nextSeriesIndex++;
           type = 'play';
         } else {
-          let adList = getFilteredList(ads, 'ad');
+          let adList = ads;
           if (adList.length > 0) {
             nextSource = getRandomItem(adList);
             type = 'ad';
@@ -384,6 +368,14 @@ function playFromQueue() {
   }
 
   const nextItem = mediaQueue.shift();
+
+  // Validate item has required properties
+  if (!nextItem || !nextItem.url || !nextItem.type) {
+    console.warn('Invalid media queue item, skipping:', nextItem);
+    isAdvancing = false;
+    playFromQueue();
+    return;
+  }
 
   if (nextItem.preloader) {
     nextItem.preloader.src = '';
@@ -564,7 +556,6 @@ function powerOn() {
 
   const ctx = getAudioContext();
   
-  // Initialize audio nodes NOW that context exists (first time only)
   if (!sourceNode) {
     sourceNode = ctx.createMediaElementSource(audioElement);
     bandpass = ctx.createBiquadFilter();
@@ -647,7 +638,9 @@ function powerOn() {
       audioElement.play().catch(() => { });
     }
     if (!initialized) {
-      initializeRadio();
+      setTimeout(() => {
+        if (radioOn && !initialized) initializeRadio();
+      }, 100);
     }
     const powerLed = document.getElementById('power-led');
     if (powerLed) {
@@ -736,7 +729,8 @@ function loadState() {
     currentSeries = state.currentSeries || null;
     nextSeriesIndex = state.nextSeriesIndex || 0;
 
-    mediaQueue = state.mediaQueue || [];
+    // Filter out invalid media queue items (missing url/type)
+    mediaQueue = (state.mediaQueue || []).filter(item => item && item.url && item.type);
     mediaQueue.forEach(item => {
       item.preloader = new Audio();
       item.preloader.preload = 'auto';
@@ -766,6 +760,12 @@ function loadState() {
     return true;
   }
   return false;
+}
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+    .catch(err => console.error('SW registration failed:', err));
 }
 
 function markVersionAsSeen(version) {
