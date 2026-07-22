@@ -1,11 +1,11 @@
-const RADIO_VERSION = "v4.2.1";
+const RADIO_VERSION = "v4.2.2";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
-const songsFolder = '/Songs/';
-const adsFolder = '/Ads/';
-const playsFolder = '/Plays/';
-const hostFolder = '/VoiceLines/';
-const introFile = '/intro.mp3';
+const songsFolder = 'Songs/';  // ← Removed leading slash
+const adsFolder = 'Ads/';      // ← Removed leading slash
+const playsFolder = 'Plays/';  // ← Removed leading slash
+const hostFolder = 'VoiceLines/';  // ← Removed leading slash
+const introFile = 'intro.mp3';     // ← Removed leading slash
 
 const songs = Array.from({ length: 293 }, (_, i) => `song${i + 1}.mp3`);
 const ads = Array.from({ length: 45 }, (_, i) => `ad${i + 1}.mp3`);
@@ -76,53 +76,29 @@ if (savedVolume !== null) {
 const nowPlayingDisplay = document.getElementById('now-playing');
 
 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-const audioContext = new AudioContextClass();
+let audioContext = null;  // ← Created on-demand, not at load time
 
-const sourceNode = audioContext.createMediaElementSource(audioElement);
-const bandpass = audioContext.createBiquadFilter();
-bandpass.type = 'bandpass';
-bandpass.frequency.value = 1000;
-bandpass.Q.value = 1;
+function getAudioContext() {
+    if (!audioContext) {
+        audioContext = new AudioContextClass();
+    }
+    return audioContext;
+}
 
-const distortion = audioContext.createWaveShaper();
-distortion.curve = makeDistortionCurve(100);
-distortion.oversample = '4x';
-
-const musicGain = audioContext.createGain();
-musicGain.gain.value = parseFloat(volumeSlider.value);
-
-const staticGain = audioContext.createGain();
-staticGain.gain.value = 0; // Starts off
-
-const staticNoise = createWhiteNoise(audioContext);
-staticNoise.connect(staticGain);
-staticGain.connect(audioContext.destination);
-staticNoise.start();
-
-const voiceDistortion = audioContext.createWaveShaper();
-voiceDistortion.curve = makeDistortionCurve(25);
-voiceDistortion.oversample = 'none';
-
-const voiceGain = audioContext.createGain();
-voiceGain.gain.value = parseFloat(volumeSlider.value);
-
-const splitter = audioContext.createGain();
-sourceNode.connect(splitter);
-
-splitter.connect(bandpass);
-bandpass.connect(distortion);
-distortion.connect(musicGain);
-musicGain.connect(audioContext.destination);
-
-splitter.connect(voiceDistortion);
-voiceDistortion.connect(voiceGain);
-voiceGain.connect(audioContext.destination);
+// Global node references - initialized in powerOn() when context exists
+let sourceNode = null;
+let bandpass = null;
+let distortion = null;
+let musicGain = null;
+let staticGain = null;
+let voiceDistortion = null;
+let voiceGain = null;
 
 volumeSlider.addEventListener('input', () => {
   const volume = parseFloat(volumeSlider.value);
-  musicGain.gain.value = volume;
-  voiceGain.gain.value = volume;
-  if (radioOn) {
+  if (musicGain) musicGain.gain.value = volume;
+  if (voiceGain) voiceGain.gain.value = volume;
+  if (radioOn && staticGain) {
     const baseStatic = 0.001;
     const dynamicStatic = 0.0015;
     staticGain.gain.value = (baseStatic + dynamicStatic * Math.sqrt(volume)) * (1 - volume * 0.3);
@@ -130,23 +106,21 @@ volumeSlider.addEventListener('input', () => {
   localStorage.setItem('radioVolume', volume);
 });
 
-// Removed stray isHost reference
-
 window.addEventListener('click', () => {
-  if (audioContext.state === 'suspended') {
+  if (audioContext && audioContext.state === 'suspended') {
     audioContext.resume();
   }
 });
 
 audioElement.addEventListener('play', () => {
-  if (audioContext.state === 'suspended') {
+  if (audioContext && audioContext.state === 'suspended') {
     audioContext.resume();
   }
 });
 
 // Set ended handler ONCE, permanently
 audioElement.addEventListener('ended', () => {
-  audioElement._watchdogFired = false;  // ← ADD THIS LINE
+  audioElement._watchdogFired = false;
   if (radioOn && !isAdvancing) {
     isAdvancing = true;
     playFromQueue();
@@ -158,18 +132,15 @@ setInterval(() => {
   if (!radioOn || isAdvancing) return;
 
   if (audioElement.paused) {
-    // Audio is paused but shouldn't be — try to recover
     if (audioElement.src && audioElement.readyState >= 2) {
       audioElement.play().catch(() => {});
     } else if (audioElement.src && audioElement.readyState < 2) {
-      // Source set but not loaded yet — been stuck too long, force advance
       isAdvancing = true;
       playFromQueue();
     }
     return;
   }
 
-  // Track is playing — check if it should have ended by now
   if (audioElement.duration && audioElement.duration > 0) {
     const remaining = audioElement.duration - audioElement.currentTime;
     if (remaining < 0.8 && remaining > 0) {
@@ -184,10 +155,9 @@ setInterval(() => {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    if (audioContext.state === 'suspended') {
+    if (audioContext && audioContext.state === 'suspended') {
       audioContext.resume();
     }
-    // If we should be playing but aren't, recover
     if (radioOn && audioElement.paused && audioElement.src) {
       audioElement.play().catch(() => { });
     }
@@ -212,7 +182,6 @@ function handleModifierToggle() {
   saveState();
   if (radioOn) {
     clearQueue();
-    // Fill it immediately so next track evaluates new criteria
     fillQueue();
   }
 }
@@ -247,7 +216,6 @@ function isFamilyFriendlyMode() {
   return familyFriendly && familyFriendly.checked;
 }
 
-// Example filter for Fallout Mode (songs, ads, plays)
 function getFilteredList(list, type) {
   const falloutMode = document.getElementById('falloutMode');
   const familyFriendly = isFamilyFriendlyMode();
@@ -264,22 +232,17 @@ function getFilteredList(list, type) {
 
   if (falloutMode && falloutMode.checked) {
     if (type === 'song') {
-      // Only Fallout genre songs
       filtered = filtered.filter(item => {
         const info = songTitles[item];
         const genres = info && info.genre ? info.genre.split(',').map(g => g.trim().toLowerCase()) : [];
         return genres.includes('fallout');
       });
     }
-    // Fallout mode does NOT filter ads or plays anymore
   }
   return filtered;
 }
 
-// Pre-generate logic for continuous buffering
 function fillQueue() {
-  // Keep a larger buffer because a song block can expand to multiple queued items
-  // when it has pre/post voice lines, and we still need room for the next ad/play.
   while (mediaQueue.length < 6) {
     if (currentSongCount < 2) {
       let unplayedSongs = getFilteredList(songs.filter(song => !playedSongs.includes(song)), 'song');
@@ -401,11 +364,10 @@ function fillQueue() {
     }
   }
 
-  // Trigger eager preload using HTML5 Audio element caching
   mediaQueue.forEach(item => {
     if (!item.preloader) {
       item.preloader = new Audio();
-      item.preloader.preload = 'auto'; // Will aggressively fetch the audio file into memory/disk cache 
+      item.preloader.preload = 'auto';
       item.preloader.src = item.url;
     }
   });
@@ -423,13 +385,12 @@ function playFromQueue() {
 
   const nextItem = mediaQueue.shift();
 
-  // Release the preloader before using the main audio element
   if (nextItem.preloader) {
     nextItem.preloader.src = '';
     nextItem.preloader = null;
   }
 
-  fillQueue(); // Trigger buffer of the next media
+  fillQueue();
 
   updateNowPlaying(nextItem.displayTitle);
   updateMediaSession(nextItem.mediaTitle, nextItem.mediaArtist);
@@ -437,22 +398,21 @@ function playFromQueue() {
   audioElement.src = nextItem.url;
 
   if (nextItem.type === 'voice' || nextItem.type === 'intro') {
-    bandpass.disconnect();
-    distortion.disconnect();
-    musicGain.disconnect();
-    voiceDistortion.disconnect();
-    voiceGain.disconnect();
-    voiceDistortion.connect(voiceGain);
-    voiceGain.connect(audioContext.destination);
+    if (bandpass) bandpass.disconnect();
+    if (distortion) distortion.disconnect();
+    if (musicGain) musicGain.disconnect();
+    if (voiceDistortion) voiceDistortion.disconnect();
+    if (voiceGain) voiceGain.disconnect();
+    if (voiceDistortion && voiceGain) voiceDistortion.connect(voiceGain);
+    if (voiceGain) voiceGain.connect(audioContext.destination);
   } else {
-    voiceDistortion.disconnect();
-    voiceGain.disconnect();
-    bandpass.connect(distortion);
-    distortion.connect(musicGain);
-    musicGain.connect(audioContext.destination);
+    if (voiceDistortion) voiceDistortion.disconnect();
+    if (voiceGain) voiceGain.disconnect();
+    if (bandpass) bandpass.connect(distortion);
+    if (distortion) distortion.connect(musicGain);
+    if (musicGain) musicGain.connect(audioContext.destination);
   }
 
-  // Remove any previous handler to prevent duplicates
   if (startPlaybackHandler) {
     audioElement.removeEventListener('canplay', startPlaybackHandler);
   }
@@ -465,7 +425,7 @@ function playFromQueue() {
     audioElement.play().catch(e => {
       console.error("Playback failed:", e);
       setTimeout(() => {
-        if (radioOn) {
+        if (radioOn && audioContext) {
           audioContext.resume().then(() => {
             audioElement.play().catch(() => {
               isAdvancing = true;
@@ -477,7 +437,6 @@ function playFromQueue() {
     });
   };
 
-  // Fallback: if canplay doesn't fire within 3 seconds, force advance
   stallTimeout = setTimeout(() => {
     audioElement.removeEventListener('canplay', startPlaybackHandler);
     if (radioOn) {
@@ -486,16 +445,13 @@ function playFromQueue() {
     }
   }, 3000);
 
-  // Listen for canplay before starting playback
   audioElement.addEventListener('canplay', startPlaybackHandler);
 
-  // If already loaded (preloader cached it), fire immediately
   if (audioElement.readyState >= 2) {
     startPlaybackHandler();
   }
 }
 
-// Example usage for Immersive Mode:
 function playIntroduction() {
   const immersiveMode = document.getElementById('immersiveMode');
   if (!radioOn) return;
@@ -506,13 +462,13 @@ function playIntroduction() {
   updateNowPlaying('Welcome to Enlightened Radio');
   updateMediaSession('Welcome to Enlightened Radio', "Host");
   audioElement.src = introFile;
-  bandpass.disconnect();
-  distortion.disconnect();
-  musicGain.disconnect();
-  voiceDistortion.disconnect();
-  voiceGain.disconnect();
-  voiceDistortion.connect(voiceGain);
-  voiceGain.connect(audioContext.destination);
+  if (bandpass) bandpass.disconnect();
+  if (distortion) distortion.disconnect();
+  if (musicGain) musicGain.disconnect();
+  if (voiceDistortion) voiceDistortion.disconnect();
+  if (voiceGain) voiceGain.disconnect();
+  if (voiceDistortion && voiceGain) voiceDistortion.connect(voiceGain);
+  if (voiceGain) voiceGain.connect(audioContext.destination);
   const initHandler = () => {
     audioElement.removeEventListener('canplay', initHandler);
     clearTimeout(initTimeout);
@@ -525,9 +481,9 @@ function playIntroduction() {
   }, 3000);
 
   audioElement.addEventListener('canplay', initHandler);
-  if (audioElement.readyState >= 2) initHandler(); // Already loaded, fire immediately
+  if (audioElement.readyState >= 2) initHandler();
 
-  fillQueue(); // Begin eagerly caching future tracks immediately!
+  fillQueue();
 }
 
 function updateNowPlaying(text) {
@@ -550,11 +506,10 @@ function updateMediaSession(title, artist) {
   }
 }
 
-// Set up Media Session Action Handlers once
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', () => {
     if (!radioOn) powerOn();
-    else audioContext.resume().then(() => audioElement.play().catch(() => { }));
+    else if (audioContext) audioContext.resume().then(() => audioElement.play().catch(() => { }));
   });
   navigator.mediaSession.setActionHandler('pause', () => powerOff());
   navigator.mediaSession.setActionHandler('stop', () => powerOff());
@@ -597,25 +552,68 @@ function initializeRadio() {
     initialized = true;
     const stateLoaded = loadState();
     if (stateLoaded && audioElement.src) {
-      // If state loaded AND we have a source, we are ready to play when powered on
-      // We do NOT play automatically here, powerOn handles the resume
     } else {
       playIntroduction();
     }
   }
 }
 
-
 function powerOn() {
   if (radioOn) return;
   radioOn = true;
-  audioContext.resume().then(() => {
+
+  const ctx = getAudioContext();
+  
+  // Initialize audio nodes NOW that context exists (first time only)
+  if (!sourceNode) {
+    sourceNode = ctx.createMediaElementSource(audioElement);
+    bandpass = ctx.createBiquadFilter();
+    bandpass.type = 'bandpass';
+    bandpass.frequency.value = 1000;
+    bandpass.Q.value = 1;
+
+    distortion = ctx.createWaveShaper();
+    distortion.curve = makeDistortionCurve(100);
+    distortion.oversample = '4x';
+
+    musicGain = ctx.createGain();
+    musicGain.gain.value = parseFloat(volumeSlider.value);
+
+    staticGain = ctx.createGain();
+    staticGain.gain.value = 0;
+
+    const staticNoise = createWhiteNoise(ctx);
+    staticNoise.connect(staticGain);
+    staticGain.connect(ctx.destination);
+    staticNoise.start();
+
+    voiceDistortion = ctx.createWaveShaper();
+    voiceDistortion.curve = makeDistortionCurve(25);
+    voiceDistortion.oversample = 'none';
+
+    voiceGain = ctx.createGain();
+    voiceGain.gain.value = parseFloat(volumeSlider.value);
+
+    const splitter = ctx.createGain();
+    sourceNode.connect(splitter);
+
+    splitter.connect(bandpass);
+    bandpass.connect(distortion);
+    distortion.connect(musicGain);
+    musicGain.connect(ctx.destination);
+
+    splitter.connect(voiceDistortion);
+    voiceDistortion.connect(voiceGain);
+    voiceGain.connect(ctx.destination);
+  }
+
+  ctx.resume().then(() => {
     const volume = parseFloat(volumeSlider.value);
     const baseStatic = 0.001;
     const dynamicStatic = 0.0015;
-    staticGain.gain.value = (baseStatic + dynamicStatic * Math.sqrt(volume)) * (1 - volume * 0.3);
-    // Resume static
-    // Resume music/audio
+    if (staticGain) {
+      staticGain.gain.value = (baseStatic + dynamicStatic * Math.sqrt(volume)) * (1 - volume * 0.3);
+    }
     if (audioElement.paused && audioElement.src) {
       let src = audioElement.src;
       if (src) {
@@ -626,7 +624,6 @@ function powerOn() {
           const artist = songInfo.artist || "Unknown Artist";
           const nowPlaying = `${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`;
           updateNowPlaying(nowPlaying);
-
           updateMediaSession(title, artist);
         } else if (src.includes(adsFolder)) {
           const adFile = src.split('/').pop();
@@ -649,7 +646,6 @@ function powerOn() {
       }
       audioElement.play().catch(() => { });
     }
-    // Only play introduction if never initialized
     if (!initialized) {
       initializeRadio();
     }
@@ -674,10 +670,8 @@ function powerOff() {
   updateNowPlaying('');
   radioOn = false;
   isAdvancing = false;
-  staticGain.gain.value = 0;
-  // Pause static and music/voice immediately
+  if (staticGain) staticGain.gain.value = 0;
   audioElement.pause();
-  // No need to stop staticNoise, just mute via gain
   const powerLed = document.getElementById('power-led');
   if (powerLed) {
     powerLed.style.background = '#222222';
@@ -697,14 +691,10 @@ function powerOff() {
 function toggleRadio() {
   if (radioOn) {
     powerOff();
-    // radioOn = false; // already set in powerOff
   } else {
     powerOn();
-    // radioOn = true; // already set in powerOn
   }
 }
-
-// Persistence Logic
 
 let isResetting = false;
 
@@ -719,8 +709,7 @@ function saveState() {
     currentSrc: audioElement.src,
     currentTime: audioElement.currentTime,
     nowPlayingText: document.getElementById('now-playing').textContent,
-    mediaQueue: mediaQueue.map(item => ({ ...item, preloader: null })), // Can't serialize Audio object
-    // Modifiers
+    mediaQueue: mediaQueue.map(item => ({ ...item, preloader: null })),
     immersiveMode: document.getElementById('immersiveMode')?.checked || false,
     falloutMode: document.getElementById('falloutMode')?.checked || false,
     adFreeMode: document.getElementById('adFreeMode')?.checked || false,
@@ -731,16 +720,13 @@ function saveState() {
 
 window.addEventListener('beforeunload', saveState);
 
-// Add change listeners to checkboxes for immediate saving
 document.getElementById('immersiveMode')?.addEventListener('change', handleModifierToggle);
 document.getElementById('falloutMode')?.addEventListener('change', handleModifierToggle);
 document.getElementById('adFreeMode')?.addEventListener('change', handleModifierToggle);
 document.getElementById('familyFriendlyMode')?.addEventListener('change', handleModifierToggle);
-// Also load state on page load to restore checkbox UI immediately
 window.addEventListener('load', loadState);
 
 function loadState() {
-
   const savedState = localStorage.getItem('radioState');
   if (savedState) {
     const state = JSON.parse(savedState);
@@ -765,7 +751,6 @@ function loadState() {
       updateNowPlaying(state.nowPlayingText);
     }
 
-    // Restore Modifiers
     const immersiveCheckbox = document.getElementById('immersiveMode');
     if (immersiveCheckbox) immersiveCheckbox.checked = state.immersiveMode || false;
 
@@ -778,11 +763,10 @@ function loadState() {
     const familyFriendlyCheckbox = document.getElementById('familyFriendlyMode');
     if (familyFriendlyCheckbox) familyFriendlyCheckbox.checked = state.familyFriendlyMode || false;
 
-    return true; // State loaded
+    return true;
   }
-  return false; // No state found
+  return false;
 }
-
 
 function markVersionAsSeen(version) {
   try {
@@ -795,7 +779,7 @@ function markVersionAsSeen(version) {
 function resetRadio() {
   isResetting = true;
   localStorage.removeItem('radioState');
-  localStorage.removeItem('radioVolume'); // Optional: reset volume too? Maybe keep volume.
+  localStorage.removeItem('radioVolume');
   markVersionAsSeen(RADIO_VERSION);
   location.reload();
 }
@@ -821,7 +805,6 @@ function checkVersion() {
     .catch(() => { });
 }
 
-// Filters Dropdown Toggle
 const filtersBtn = document.getElementById('filtersBtn');
 const filtersContent = document.getElementById('filtersContent');
 
@@ -837,5 +820,3 @@ if (filtersBtn && filtersContent) {
     }
   });
 }
-
-
