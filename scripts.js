@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.1.2";
+const RADIO_VERSION = "v4.1.3";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
@@ -260,7 +260,9 @@ function getFilteredList(list, type) {
 
 // Pre-generate logic for continuous buffering
 function fillQueue() {
-  while (mediaQueue.length < 2) {
+  // Keep a larger buffer because a song block can expand to multiple queued items
+  // when it has pre/post voice lines, and we still need room for the next ad/play.
+  while (mediaQueue.length < 4) {
     if (currentSongCount < 2) {
       let unplayedSongs = getFilteredList(songs.filter(song => !playedSongs.includes(song)), 'song');
       if (unplayedSongs.length === 0) {
@@ -286,8 +288,8 @@ function fillQueue() {
           mediaQueue.push({
             url: hostFolder + line,
             type: 'voice',
-            displayTitle: `Host: ${line}`,
-            mediaTitle: `Host: ${line}`,
+            displayTitle: `${line}`,
+            mediaTitle: `${line}`,
             mediaArtist: 'Host',
             originalFile: line
           });
@@ -297,7 +299,7 @@ function fillQueue() {
       mediaQueue.push({
         url: songsFolder + nextSong,
         type: 'song',
-        displayTitle: `Now Playing: ${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`,
+        displayTitle: `${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`,
         mediaTitle: title,
         mediaArtist: artist,
         originalFile: nextSong
@@ -310,8 +312,8 @@ function fillQueue() {
           mediaQueue.push({
             url: hostFolder + line,
             type: 'voice',
-            displayTitle: `Host: ${line}`,
-            mediaTitle: `Host: ${line}`,
+            displayTitle: `${line}`,
+            mediaTitle: `${line}`,
             mediaArtist: 'Host',
             originalFile: line
           });
@@ -361,7 +363,7 @@ function fillQueue() {
         mediaQueue.push({
           url: playsFolder + nextSource,
           type: 'play',
-          displayTitle: `Radio Play: ${dTitle}`,
+          displayTitle: `${dTitle}`,
           mediaTitle: dTitle,
           mediaArtist: "Enlightened Radio",
           originalFile: nextSource
@@ -371,7 +373,7 @@ function fillQueue() {
         mediaQueue.push({
           url: adsFolder + nextSource,
           type: 'ad',
-          displayTitle: `Ad: ${dTitle}`,
+          displayTitle: `${dTitle}`,
           mediaTitle: dTitle,
           mediaArtist: "Enlightened Radio Sponsor",
           originalFile: nextSource
@@ -542,24 +544,24 @@ function powerOn() {
           const songInfo = songTitles[songFile] || {};
           const title = songInfo.title || songFile;
           const artist = songInfo.artist || "Unknown Artist";
-          const nowPlaying = `Now Playing: ${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`;
+          const nowPlaying = `${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`;
           updateNowPlaying(nowPlaying);
 
           updateMediaSession(title, artist);
         } else if (src.includes(adsFolder)) {
           const adFile = src.split('/').pop();
           const displayTitle = adTitles.ads[adFile] ? adTitles.ads[adFile].title : adFile;
-          updateNowPlaying(`Ad: ${displayTitle}`);
+          updateNowPlaying(`${displayTitle}`);
           updateMediaSession(displayTitle, "Enlightened Radio Sponsor");
         } else if (src.includes(playsFolder)) {
           const playFile = src.split('/').pop();
           const displayTitle = adTitles.plays[playFile] ? adTitles.plays[playFile].title : playFile;
-          updateNowPlaying(`Radio Play: ${displayTitle}`);
+          updateNowPlaying(`${displayTitle}`);
           updateMediaSession(displayTitle, "Enlightened Radio");
         } else if (src.includes(hostFolder)) {
           const hostFile = src.split('/').pop();
-          updateNowPlaying(`Host: ${hostFile}`);
-          updateMediaSession(`Host: ${hostFile}`, "Host");
+          updateNowPlaying(`${hostFile}`);
+          updateMediaSession(`${hostFile}`, "Host");
         } else if (src.includes(introFile)) {
           updateNowPlaying('Welcome to Enlightened Radio');
           updateMediaSession('Welcome to Enlightened Radio', "Host");
