@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.1.3";
+const RADIO_VERSION = "v4.2.0";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
@@ -51,6 +51,10 @@ const playSeries = [
 
 let currentSeries = null;
 let nextSeriesIndex = 0;
+
+// Module-scope handler so removeEventListener can actually find it
+let startPlaybackHandler = null;
+let stallTimeout = null;
 
 fetch('song_titles.json')
   .then(res => res.json())
@@ -142,6 +146,7 @@ audioElement.addEventListener('play', () => {
 
 // Set ended handler ONCE, permanently
 audioElement.addEventListener('ended', () => {
+  audioElement._watchdogFired = false;  // ← ADD THIS LINE
   if (radioOn && !isAdvancing) {
     isAdvancing = true;
     playFromQueue();
@@ -150,11 +155,24 @@ audioElement.addEventListener('ended', () => {
 
 // Watchdog: catches missed 'ended' events when screen is off
 setInterval(() => {
-  if (!radioOn || audioElement.paused || isAdvancing) return;
+  if (!radioOn || isAdvancing) return;
+
+  if (audioElement.paused) {
+    // Audio is paused but shouldn't be — try to recover
+    if (audioElement.src && audioElement.readyState >= 2) {
+      audioElement.play().catch(() => {});
+    } else if (audioElement.src && audioElement.readyState < 2) {
+      // Source set but not loaded yet — been stuck too long, force advance
+      isAdvancing = true;
+      playFromQueue();
+    }
+    return;
+  }
+
+  // Track is playing — check if it should have ended by now
   if (audioElement.duration && audioElement.duration > 0) {
     const remaining = audioElement.duration - audioElement.currentTime;
     if (remaining < 0.8 && remaining > 0) {
-      // Nearly done — nudge it along
       audioElement._watchdogFired = true;
     } else if (remaining <= 0 || (audioElement._watchdogFired && audioElement.paused)) {
       audioElement._watchdogFired = false;
@@ -394,7 +412,6 @@ function fillQueue() {
 }
 
 function playFromQueue() {
-  isAdvancing = false;
   if (!radioOn) return;
   fillQueue();
 
@@ -404,6 +421,13 @@ function playFromQueue() {
   }
 
   const nextItem = mediaQueue.shift();
+
+  // Release the preloader before using the main audio element
+  if (nextItem.preloader) {
+    nextItem.preloader.src = '';
+    nextItem.preloader = null;
+  }
+
   fillQueue(); // Trigger buffer of the next media
 
   updateNowPlaying(nextItem.displayTitle);
@@ -427,7 +451,42 @@ function playFromQueue() {
     musicGain.connect(audioContext.destination);
   }
 
-  audioElement.play().catch(e => console.error("Playback failed:", e));
+  // Remove any previous handler to prevent duplicates
+  if (startPlaybackHandler) {
+    audioElement.removeEventListener('canplay', startPlaybackHandler);
+  }
+
+  startPlaybackHandler = () => {
+    audioElement.removeEventListener('canplay', startPlaybackHandler);
+    if (stallTimeout) clearTimeout(stallTimeout);
+    isAdvancing = false;
+
+    audioElement.play().catch(e => {
+      console.error("Playback failed:", e);
+      setTimeout(() => {
+        if (radioOn) {
+          audioContext.resume().then(() => {
+            audioElement.play().catch(() => {
+              isAdvancing = true;
+              playFromQueue();
+            });
+          });
+        }
+      }, 500);
+    });
+  };
+
+  // Fallback: if canplay doesn't fire within 3 seconds, force advance
+  stallTimeout = setTimeout(() => {
+    audioElement.removeEventListener('canplay', startPlaybackHandler);
+    if (radioOn) {
+      console.warn('Track stalled on load, skipping:', nextItem.url);
+      playFromQueue();
+    }
+  }, 3000);
+
+  // Listen for canplay before starting playback
+  audioElement.addEventListener('canplay', startPlaybackHandler);
 }
 
 // Example usage for Immersive Mode:
@@ -448,7 +507,19 @@ function playIntroduction() {
   voiceGain.disconnect();
   voiceDistortion.connect(voiceGain);
   voiceGain.connect(audioContext.destination);
-  audioElement.play().catch(() => { });
+  const initHandler = () => {
+    audioElement.removeEventListener('canplay', initHandler);
+    clearTimeout(initTimeout);
+    audioElement.play().catch(() => {});
+  };
+
+  const initTimeout = setTimeout(() => {
+    audioElement.removeEventListener('canplay', initHandler);
+    if (radioOn) fillQueue();
+  }, 3000);
+
+  audioElement.addEventListener('canplay', initHandler);
+  if (audioElement.readyState >= 2) initHandler(); // Already loaded, fire immediately
 
   fillQueue(); // Begin eagerly caching future tracks immediately!
 }
@@ -482,7 +553,10 @@ if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('pause', () => powerOff());
   navigator.mediaSession.setActionHandler('stop', () => powerOff());
   navigator.mediaSession.setActionHandler('nexttrack', () => {
-    if (radioOn) playFromQueue();
+    if (radioOn) {
+      isAdvancing = true;
+      playFromQueue();
+    }
   });
 }
 
