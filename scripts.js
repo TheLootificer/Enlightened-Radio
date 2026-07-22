@@ -1,8 +1,8 @@
-const RADIO_VERSION = "v4.2.2";
+const RADIO_VERSION = "v4.3.0";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
-const adsFolder = 'Ads/';
+const adsFolder = 'Sponsors/';
 const playsFolder = 'Plays/';
 const hostFolder = 'VoiceLines/';
 const introFile = 'intro.mp3';
@@ -491,9 +491,6 @@ function updateMediaSession(title, artist) {
       title: title,
       artist: artist,
       album: 'Enlightened Radio',
-      artwork: [
-        { src: 'https://ashhaven.com/images/logo.png', sizes: '512x512', type: 'image/png' }
-      ]
     });
   }
 }
@@ -760,12 +757,6 @@ function loadState() {
     return true;
   }
   return false;
-}
-
-// Service Worker Registration
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js', { scope: './' })
-    .catch(err => console.error('SW registration failed:', err));
 }
 
 function markVersionAsSeen(version) {
