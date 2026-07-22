@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.3.0";
+const RADIO_VERSION = "v4.3.1";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
@@ -8,7 +8,7 @@ const hostFolder = 'VoiceLines/';
 const introFile = 'intro.mp3';
 
 const songs = Array.from({ length: 293 }, (_, i) => `song${i + 1}.mp3`);
-const ads = Array.from({ length: 45 }, (_, i) => `ad${i + 1}.mp3`);
+const ads = Array.from({ length: 45 }, (_, i) => `sponsor${i + 1}.mp3`);
 const plays = Array.from({ length: 41 }, (_, i) => `play${i + 1}.mp3`);
 
 const preVoiceLines = {
