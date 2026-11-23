@@ -8,10 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <meta property="og:title" content="Enlightened Radio" />
   <meta property="og:description" content="You're listening to Enlightened Radio!" />
-  <meta property="og:url" content="https://ashhaven.com/" />
-  <meta property="og:image" content="https://ashhaven.com/images/logo.png" />
+  <meta property="og:url" content="https://www.enlightened-radio.org/" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="AshHaven" />
+  <meta property="og:site_name" content="Enlightened Radio" />
   <meta name="theme-color" content="#33ffff" />
   <style>
     body {
@@ -44,16 +43,6 @@
       color: #e0e0e0;
       text-shadow: 0 0 10px #7b2cbf, 0 0 20px #7b2cbf;
       letter-spacing: 2px;
-    }
-
-    .dial:after {
-      content: '';
-      position: absolute;
-      width: 4px;
-      height: 20px;
-      background: #7b2cbf;
-      top: 10px;
-      left: 28px;
     }
 
     #volumeSlider {
@@ -367,32 +356,7 @@
   </div>
   <script src="scripts.js"></script>
   <script>
-    const powerButton = document.getElementById('powerButton');
-    const powerLed = document.getElementById('power-led');
-    let isPoweredOn = false;
-
-    powerButton.addEventListener('click', () => {
-      isPoweredOn = !isPoweredOn;
-      if (isPoweredOn) {
-        powerLed.style.background = '#c77dff';
-        powerLed.style.boxShadow = '0 0 10px #c77dff';
-        if (typeof powerOn === 'function') powerOn();
-      } else {
-        powerLed.style.background = '#222';
-        powerLed.style.boxShadow = '0 0 8px #000';
-        if (typeof powerOff === 'function') powerOff();
-      }
-    });
-
-    function openContactModal() {
-      document.getElementById('contactModal').classList.add('show');
-    }
-
-    function closeContactModal(event) {
-      if (!event || event.target.id === 'contactModal') {
-        document.getElementById('contactModal').classList.remove('show');
-      }
-    }
+    document.getElementById('powerButton').addEventListener('click', toggleRadio);
 
     function closeUpdateModal(event) {
       if (!event || event.target.id === 'updateModal') {
@@ -403,7 +367,6 @@
     // Close modals when pressing Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        closeContactModal();
         closeUpdateModal();
       }
     });

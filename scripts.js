@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.4";
+const RADIO_VERSION = "v4.5";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
@@ -31,7 +31,6 @@ const postVoiceLines = {
 let radioOn = false;
 let isAdvancing = false;
 let currentSongCount = 0;
-let lastSongPlayed = '';
 let playedSongs = [];
 let songTitles = {};
 
@@ -85,19 +84,20 @@ function clearStallTimer() {
   }
 }
 
-fetch('song_titles.json')
-  .then(res => res.json())
-  .then(data => songTitles = data);
-
 let adTitles = { ads: {}, plays: {} };
-fetch('extra_titles.json')
-  .then(res => res.json())
-  .then(data => adTitles = data);
+let titlesLoaded = false;
+Promise.all([
+  fetch('song_titles.json').then(res => res.json()).then(data => songTitles = data),
+  fetch('extra_titles.json').then(res => res.json()).then(data => adTitles = data),
+])
+  .catch(e => console.warn('Could not load titles:', e))
+  .finally(() => titlesLoaded = true);
 
 const audioElement = document.getElementById('audio-player');
 const volumeSlider = document.getElementById('volumeSlider');
 
-const savedVolume = localStorage.getItem('radioVolume');
+let savedVolume = null;
+try { savedVolume = localStorage.getItem('radioVolume'); } catch (e) {}
 if (savedVolume !== null) {
   volumeSlider.value = savedVolume;
 }
@@ -129,7 +129,7 @@ volumeSlider.addEventListener('input', () => {
     const dynamicStatic = 0.0015;
     staticGain.gain.value = (baseStatic + dynamicStatic * Math.sqrt(volume)) * (1 - volume * 0.3);
   }
-  localStorage.setItem('radioVolume', volume);
+  try { localStorage.setItem('radioVolume', volume); } catch (e) {}
 });
 
 window.addEventListener('click', () => {
@@ -145,7 +145,6 @@ audioElement.addEventListener('play', () => {
 });
 
 audioElement.addEventListener('ended', () => {
-  audioElement._watchdogFired = false;
   if (radioOn && !isAdvancing) {
     advanceAfterGap();
   }
@@ -180,14 +179,9 @@ setInterval(() => {
   }
   notReadyTicks = 0;
 
-  if (audioElement.duration && audioElement.duration > 0) {
-    const remaining = audioElement.duration - audioElement.currentTime;
-    if (remaining < 0.8 && remaining > 0) {
-      audioElement._watchdogFired = true;
-    } else if (remaining <= 0 || (audioElement._watchdogFired && audioElement.paused)) {
-      audioElement._watchdogFired = false;
-      advanceAfterGap();
-    }
+  // Backup for a missed 'ended' event
+  if (audioElement.duration > 0 && audioElement.currentTime >= audioElement.duration) {
+    advanceAfterGap();
   }
 }, 750);
 
@@ -196,7 +190,7 @@ document.addEventListener('visibilitychange', () => {
     if (audioContext && audioContext.state === 'suspended') {
       audioContext.resume();
     }
-    if (radioOn && audioElement.paused && audioElement.src) {
+    if (radioOn && !isAdvancing && audioElement.paused && audioElement.src) {
       audioElement.play().catch(() => { });
     }
   }
@@ -208,6 +202,28 @@ function getRandomItem(array) {
 }
 
 let mediaQueue = [];
+let currentItem = null; // the track loaded in the player, saved so power-on/reload can show it again
+
+const isVoiceItem = item => item.type === 'voice' || item.type === 'intro';
+
+// Send audio through the voice chain or the music chain, never both
+function routeAudio(isVoice) {
+  if (!sourceNode) return;
+  [bandpass, distortion, musicGain, voiceDistortion, voiceGain].forEach(node => node.disconnect());
+  if (isVoice) {
+    voiceDistortion.connect(voiceGain);
+    voiceGain.connect(audioContext.destination);
+  } else {
+    bandpass.connect(distortion);
+    distortion.connect(musicGain);
+    musicGain.connect(audioContext.destination);
+  }
+}
+
+function showItem(item) {
+  updateNowPlaying(item.displayTitle);
+  updateMediaSession(item.mediaTitle, item.mediaArtist);
+}
 
 function clearQueue() {
   mediaQueue.forEach(item => {
@@ -226,51 +242,36 @@ function handleModifierToggle() {
 
 function shouldPlayVoiceLine(song) {
   if (isImmersiveMode()) return false;
-  if (isFalloutMode()) {
-    const info = songTitles[song];
-    const genres = info && info.genre ? info.genre.split(',').map(g => g.trim().toLowerCase()) : [];
-    if (!genres.includes('fallout')) return false;
-  }
+  if (isFalloutMode() && !getGenres(song).includes('fallout')) return false;
   return true;
 }
 
-function isImmersiveMode() {
-  const immersive = document.getElementById('immersiveMode');
-  return immersive && immersive.checked;
-}
+const isChecked = id => !!document.getElementById(id)?.checked;
+const isImmersiveMode = () => isChecked('immersiveMode');
+const isFalloutMode = () => isChecked('falloutMode');
+const isAdFreeMode = () => isChecked('adFreeMode');
+const isFamilyFriendlyMode = () => isChecked('familyFriendlyMode');
 
-function isFalloutMode() {
-  const fallout = document.getElementById('falloutMode');
-  return fallout && fallout.checked;
-}
-
-function isAdFreeMode() {
-  const adFree = document.getElementById('adFreeMode');
-  return adFree && adFree.checked;
-}
-
-function isFamilyFriendlyMode() {
-  const familyFriendly = document.getElementById('familyFriendlyMode');
-  return familyFriendly && familyFriendly.checked;
+function getGenres(song) {
+  const info = songTitles[song];
+  return info && info.genre ? info.genre.split(',').map(g => g.trim().toLowerCase()) : [];
 }
 
 function getFilteredList(list, type) {
+  if (type !== 'song') return list;
   const familyFriendly = isFamilyFriendlyMode();
-
-  let filtered = list;
-
-  if (familyFriendly && type === 'song') {
-    filtered = filtered.filter(item => {
-      const info = songTitles[item];
-      const genres = info && info.genre ? info.genre.split(',').map(g => g.trim().toLowerCase()) : [];
-      return !genres.includes('nsfw');
-    });
-  }
-
-  return filtered;
+  const falloutOnly = isFalloutMode();
+  return list.filter(song => {
+    const genres = getGenres(song);
+    if (familyFriendly && genres.includes('nsfw')) return false;
+    if (falloutOnly && !genres.includes('fallout')) return false;
+    return true;
+  });
 }
 
 function fillQueue() {
+  // Filters need the genre tags; playFromQueue retries until they arrive
+  if (!titlesLoaded) return;
   while (mediaQueue.length < 6) {
     if (currentSongCount < 2) {
       let unplayedSongs = getFilteredList(songs.filter(song => !playedSongs.includes(song)), 'song');
@@ -281,7 +282,6 @@ function fillQueue() {
       if (unplayedSongs.length === 0) break;
 
       let nextSong = getRandomItem(unplayedSongs);
-      lastSongPlayed = nextSong;
       playedSongs.push(nextSong);
       currentSongCount++;
 
@@ -346,9 +346,8 @@ function fillQueue() {
           nextSeriesIndex++;
           type = 'play';
         } else {
-          let adList = ads;
-          if (adList.length > 0) {
-            nextSource = getRandomItem(adList);
+          if (ads.length > 0) {
+            nextSource = getRandomItem(ads);
             type = 'ad';
           }
         }
@@ -407,13 +406,15 @@ function preloadQueue() {
 
 function playFromQueue() {
   if (!radioOn) return;
+  clearTimeout(trackGapTimeout);
+  trackGapTimeout = null;
   clearStallTimer();
   notReadyTicks = 0;
   fillQueue();
 
   if (mediaQueue.length === 0) {
-    isAdvancing = false;
-    setTimeout(playFromQueue, 1000);
+    isAdvancing = true; // stops the watchdog replaying the finished track while we wait
+    trackGapTimeout = setTimeout(playFromQueue, 1000); // shared timer so only one retry loop exists
     return;
   }
 
@@ -434,26 +435,10 @@ function playFromQueue() {
 
   fillQueue();
 
-  updateNowPlaying(nextItem.displayTitle);
-  updateMediaSession(nextItem.mediaTitle, nextItem.mediaArtist);
-
+  currentItem = nextItem;
+  showItem(nextItem);
   audioElement.src = nextItem.url;
-
-  if (nextItem.type === 'voice' || nextItem.type === 'intro') {
-    if (bandpass) bandpass.disconnect();
-    if (distortion) distortion.disconnect();
-    if (musicGain) musicGain.disconnect();
-    if (voiceDistortion) voiceDistortion.disconnect();
-    if (voiceGain) voiceGain.disconnect();
-    if (voiceDistortion && voiceGain) voiceDistortion.connect(voiceGain);
-    if (voiceGain) voiceGain.connect(audioContext.destination);
-  } else {
-    if (voiceDistortion) voiceDistortion.disconnect();
-    if (voiceGain) voiceGain.disconnect();
-    if (bandpass) bandpass.connect(distortion);
-    if (distortion) distortion.connect(musicGain);
-    if (musicGain) musicGain.connect(audioContext.destination);
-  }
+  routeAudio(isVoiceItem(nextItem));
 
   if (startPlaybackHandler) {
     audioElement.removeEventListener('canplay', startPlaybackHandler);
@@ -465,6 +450,7 @@ function playFromQueue() {
     audioElement.removeEventListener('canplay', startPlaybackHandler);
     clearStallTimer();
     isAdvancing = false;
+    if (!radioOn) return;
 
     audioElement.play().catch(e => {
       console.error("Playback failed:", e);
@@ -503,26 +489,25 @@ function playFromQueue() {
 }
 
 function playIntroduction() {
-  const immersiveMode = document.getElementById('immersiveMode');
   if (!radioOn) return;
-  if (immersiveMode && immersiveMode.checked) {
+  if (isImmersiveMode()) {
     playFromQueue();
     return;
   }
-  updateNowPlaying('Welcome to Enlightened Radio');
-  updateMediaSession('Welcome to Enlightened Radio', "Host");
+  currentItem = {
+    url: introFile,
+    type: 'intro',
+    displayTitle: 'Welcome to Enlightened Radio',
+    mediaTitle: 'Welcome to Enlightened Radio',
+    mediaArtist: 'Host'
+  };
+  showItem(currentItem);
   audioElement.src = introFile;
-  if (bandpass) bandpass.disconnect();
-  if (distortion) distortion.disconnect();
-  if (musicGain) musicGain.disconnect();
-  if (voiceDistortion) voiceDistortion.disconnect();
-  if (voiceGain) voiceGain.disconnect();
-  if (voiceDistortion && voiceGain) voiceDistortion.connect(voiceGain);
-  if (voiceGain) voiceGain.connect(audioContext.destination);
+  routeAudio(true);
   const initHandler = () => {
     audioElement.removeEventListener('canplay', initHandler);
     clearTimeout(initTimeout);
-    audioElement.play().catch(() => {});
+    if (radioOn) audioElement.play().catch(() => {});
   };
 
   const initTimeout = setTimeout(() => {
@@ -556,7 +541,7 @@ function updateMediaSession(title, artist) {
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', () => {
     if (!radioOn) powerOn();
-    else if (audioContext) audioContext.resume().then(() => audioElement.play().catch(() => { }));
+    else if (audioContext && !isAdvancing) audioContext.resume().then(() => audioElement.play().catch(() => { }));
   });
   navigator.mediaSession.setActionHandler('pause', () => powerOff());
   navigator.mediaSession.setActionHandler('stop', () => powerOff());
@@ -654,42 +639,21 @@ function powerOn() {
   }
 
   ctx.resume().then(() => {
+    if (!radioOn) return; // powered off again before audio woke up
     const volume = parseFloat(volumeSlider.value);
     const baseStatic = 0.001;
     const dynamicStatic = 0.0015;
     if (staticGain) {
       staticGain.gain.value = (baseStatic + dynamicStatic * Math.sqrt(volume)) * (1 - volume * 0.3);
     }
-    if (audioElement.paused && audioElement.src) {
-      let src = audioElement.src;
-      if (src) {
-        if (src.includes(songsFolder)) {
-          const songFile = src.split('/').pop();
-          const songInfo = songTitles[songFile] || {};
-          const title = songInfo.title || songFile;
-          const artist = songInfo.artist || "Unknown Artist";
-          const nowPlaying = `${title}${artist !== "Unknown Artist" ? " by " + artist : ""}`;
-          updateNowPlaying(nowPlaying);
-          updateMediaSession(title, artist);
-        } else if (src.includes(adsFolder)) {
-          const adFile = src.split('/').pop();
-          const displayTitle = adTitles.ads[adFile] ? adTitles.ads[adFile].title : adFile;
-          updateNowPlaying(`${displayTitle}`);
-          updateMediaSession(displayTitle, "Enlightened Radio Sponsor");
-        } else if (src.includes(playsFolder)) {
-          const playFile = src.split('/').pop();
-          const displayTitle = adTitles.plays[playFile] ? adTitles.plays[playFile].title : playFile;
-          updateNowPlaying(`${displayTitle}`);
-          updateMediaSession(displayTitle, "Enlightened Radio");
-        } else if (src.includes(hostFolder)) {
-          const hostFile = src.split('/').pop();
-          updateNowPlaying(`${hostFile}`);
-          updateMediaSession(`${hostFile}`, "Host");
-        } else if (src.includes(introFile)) {
-          updateNowPlaying('Welcome to Enlightened Radio');
-          updateMediaSession('Welcome to Enlightened Radio', "Host");
-        }
-      }
+    if (audioElement.ended) {
+      // Powered off during the gap between tracks: move on instead of replaying
+      isAdvancing = true;
+      playFromQueue();
+    } else if (audioElement.paused && audioElement.src) {
+      // Resuming a paused or restored track: show its title and route it to the right chain
+      if (currentItem) showItem(currentItem);
+      routeAudio(currentItem ? isVoiceItem(currentItem) : false);
       audioElement.play().catch(() => { });
     }
     if (!initialized) {
@@ -756,22 +720,23 @@ function saveState() {
   const state = {
     playedSongs: playedSongs,
     currentSongCount: currentSongCount,
-    lastSongPlayed: lastSongPlayed,
     currentSeries: currentSeries,
     nextSeriesIndex: nextSeriesIndex,
     currentSrc: audioElement.src,
     currentTime: audioElement.currentTime,
     nowPlayingText: document.getElementById('now-playing').textContent,
     mediaQueue: mediaQueue.map(item => ({ ...item, preloader: null })),
+    currentItem: currentItem && { ...currentItem, preloader: null },
     immersiveMode: document.getElementById('immersiveMode')?.checked || false,
     falloutMode: document.getElementById('falloutMode')?.checked || false,
     adFreeMode: document.getElementById('adFreeMode')?.checked || false,
     familyFriendlyMode: document.getElementById('familyFriendlyMode')?.checked || false
   };
-  localStorage.setItem('radioState', JSON.stringify(state));
+  try { localStorage.setItem('radioState', JSON.stringify(state)); } catch (e) {}
 }
 
 window.addEventListener('beforeunload', saveState);
+window.addEventListener('pagehide', saveState); // mobile browsers often skip beforeunload
 
 document.getElementById('immersiveMode')?.addEventListener('change', handleModifierToggle);
 document.getElementById('falloutMode')?.addEventListener('change', handleModifierToggle);
@@ -787,12 +752,15 @@ function loadState() {
 }
 
 function restoreState() {
-  const savedState = localStorage.getItem('radioState');
-  if (savedState) {
-    const state = JSON.parse(savedState);
+  let state = null;
+  try {
+    state = JSON.parse(localStorage.getItem('radioState'));
+  } catch (e) {
+    console.warn('Saved radio state unreadable, starting fresh:', e);
+  }
+  if (state && typeof state === 'object') {
     playedSongs = state.playedSongs || [];
     currentSongCount = state.currentSongCount || 0;
-    lastSongPlayed = state.lastSongPlayed || '';
     currentSeries = state.currentSeries || null;
     nextSeriesIndex = state.nextSeriesIndex || 0;
 
@@ -801,6 +769,7 @@ function restoreState() {
     mediaQueue = (state.mediaQueue || []).filter(item => item && item.url && item.type);
     preloadQueue();
 
+    currentItem = state.currentItem || null;
     if (state.currentSrc) {
       audioElement.src = state.currentSrc;
       audioElement.currentTime = state.currentTime || 0;
@@ -836,8 +805,10 @@ function markVersionAsSeen(version) {
 
 function resetRadio() {
   isResetting = true;
-  localStorage.removeItem('radioState');
-  localStorage.removeItem('radioVolume');
+  try {
+    localStorage.removeItem('radioState');
+    localStorage.removeItem('radioVolume');
+  } catch (e) {}
   markVersionAsSeen(RADIO_VERSION);
   location.reload();
 }
@@ -849,7 +820,8 @@ function checkVersion() {
       const remoteVersion = data.version;
       if (!remoteVersion) return;
 
-      const lastSeenVersion = localStorage.getItem(VERSION_STORAGE_KEY);
+      let lastSeenVersion = null;
+      try { lastSeenVersion = localStorage.getItem(VERSION_STORAGE_KEY); } catch (e) {}
 
       if (remoteVersion !== RADIO_VERSION) {
         if (lastSeenVersion !== remoteVersion) {
