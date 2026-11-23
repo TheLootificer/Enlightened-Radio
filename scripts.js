@@ -1,4 +1,4 @@
-const RADIO_VERSION = "v4.3.2";
+const RADIO_VERSION = "v4.4";
 const VERSION_STORAGE_KEY = 'enlightenedRadioLastSeenVersion';
 
 const songsFolder = 'Songs/';
@@ -54,13 +54,43 @@ let nextSeriesIndex = 0;
 
 let startPlaybackHandler = null;
 let stallTimeout = null;
+let stallProgressHandler = null;
+let loadCounter = 0;
+let notReadyTicks = 0;
+let stateLoadResult = null;
+
+const PRELOAD_AHEAD = 2;      // only buffer the next couple of tracks so they don't fight the current one
+const STALL_TIMEOUT_MS = 15000; // skip only if no data has arrived for this long
+const TRACK_GAP_MS = 1000;      // pause between tracks so slow connections/devices can load the next one
+let trackGapTimeout = null;
+
+// Called when a track finishes: wait briefly, then start the next one
+function advanceAfterGap() {
+  isAdvancing = true;
+  if (trackGapTimeout) clearTimeout(trackGapTimeout);
+  trackGapTimeout = setTimeout(() => {
+    trackGapTimeout = null;
+    playFromQueue();
+  }, TRACK_GAP_MS);
+}
+
+function clearStallTimer() {
+  if (stallTimeout) {
+    clearTimeout(stallTimeout);
+    stallTimeout = null;
+  }
+  if (stallProgressHandler) {
+    audioElement.removeEventListener('progress', stallProgressHandler);
+    stallProgressHandler = null;
+  }
+}
 
 fetch('song_titles.json')
   .then(res => res.json())
   .then(data => songTitles = data);
 
 let adTitles = { ads: {}, plays: {} };
-fetch('ad_titles.json')
+fetch('extra_titles.json')
   .then(res => res.json())
   .then(data => adTitles = data);
 
@@ -117,23 +147,38 @@ audioElement.addEventListener('play', () => {
 audioElement.addEventListener('ended', () => {
   audioElement._watchdogFired = false;
   if (radioOn && !isAdvancing) {
-    isAdvancing = true;
-    playFromQueue();
+    advanceAfterGap();
   }
+});
+
+audioElement.addEventListener('error', () => {
+  if (!radioOn || !audioElement.getAttribute('src')) return;
+  console.warn('Track failed to load, skipping:', audioElement.src);
+  clearStallTimer();
+  isAdvancing = true;
+  playFromQueue();
 });
 
 setInterval(() => {
   if (!radioOn || isAdvancing) return;
 
   if (audioElement.paused) {
-    if (audioElement.src && audioElement.readyState >= 2) {
+    if (!audioElement.src) return;
+    if (audioElement.readyState >= 2) {
+      notReadyTicks = 0;
       audioElement.play().catch(() => {});
-    } else if (audioElement.src && audioElement.readyState < 2) {
+    } else if (++notReadyTicks * 750 >= STALL_TIMEOUT_MS) {
+      // Still loading after a long time: give up on this track
+      notReadyTicks = 0;
       isAdvancing = true;
       playFromQueue();
+    } else {
+      // Still buffering — make sure it starts as soon as it can
+      audioElement.play().catch(() => {});
     }
     return;
   }
+  notReadyTicks = 0;
 
   if (audioElement.duration && audioElement.duration > 0) {
     const remaining = audioElement.duration - audioElement.currentTime;
@@ -141,8 +186,7 @@ setInterval(() => {
       audioElement._watchdogFired = true;
     } else if (remaining <= 0 || (audioElement._watchdogFired && audioElement.paused)) {
       audioElement._watchdogFired = false;
-      isAdvancing = true;
-      playFromQueue();
+      advanceAfterGap();
     }
   }
 }, 750);
@@ -348,8 +392,12 @@ function fillQueue() {
     }
   }
 
-  mediaQueue.forEach(item => {
-    if (!item.preloader) {
+  preloadQueue();
+}
+
+function preloadQueue() {
+  mediaQueue.forEach((item, i) => {
+    if (i < PRELOAD_AHEAD && !item.preloader) {
       item.preloader = new Audio();
       item.preloader.preload = 'auto';
       item.preloader.src = item.url;
@@ -359,6 +407,8 @@ function fillQueue() {
 
 function playFromQueue() {
   if (!radioOn) return;
+  clearStallTimer();
+  notReadyTicks = 0;
   fillQueue();
 
   if (mediaQueue.length === 0) {
@@ -409,9 +459,11 @@ function playFromQueue() {
     audioElement.removeEventListener('canplay', startPlaybackHandler);
   }
 
+  const loadToken = ++loadCounter;
+
   startPlaybackHandler = () => {
     audioElement.removeEventListener('canplay', startPlaybackHandler);
-    if (stallTimeout) clearTimeout(stallTimeout);
+    clearStallTimer();
     isAdvancing = false;
 
     audioElement.play().catch(e => {
@@ -429,13 +481,19 @@ function playFromQueue() {
     });
   };
 
-  stallTimeout = setTimeout(() => {
-    audioElement.removeEventListener('canplay', startPlaybackHandler);
-    if (radioOn) {
+  // Skip only if the track stops receiving data, not just because it's slow to buffer
+  const armStallTimer = () => {
+    if (stallTimeout) clearTimeout(stallTimeout);
+    stallTimeout = setTimeout(() => {
+      if (loadToken !== loadCounter || !radioOn) return;
+      audioElement.removeEventListener('canplay', startPlaybackHandler);
       console.warn('Track stalled on load, skipping:', nextItem.url);
       playFromQueue();
-    }
-  }, 3000);
+    }, STALL_TIMEOUT_MS);
+  };
+  stallProgressHandler = armStallTimer;
+  audioElement.addEventListener('progress', stallProgressHandler);
+  armStallTimer();
 
   audioElement.addEventListener('canplay', startPlaybackHandler);
 
@@ -660,6 +718,11 @@ function powerOff() {
   updateNowPlaying('');
   radioOn = false;
   isAdvancing = false;
+  clearStallTimer();
+  if (trackGapTimeout) {
+    clearTimeout(trackGapTimeout);
+    trackGapTimeout = null;
+  }
   if (staticGain) staticGain.gain.value = 0;
   audioElement.pause();
   const powerLed = document.getElementById('power-led');
@@ -717,6 +780,13 @@ document.getElementById('familyFriendlyMode')?.addEventListener('change', handle
 window.addEventListener('load', loadState);
 
 function loadState() {
+  // Runs on page load and again on first power-on; only restore once
+  if (stateLoadResult !== null) return stateLoadResult;
+  stateLoadResult = restoreState();
+  return stateLoadResult;
+}
+
+function restoreState() {
   const savedState = localStorage.getItem('radioState');
   if (savedState) {
     const state = JSON.parse(savedState);
@@ -727,12 +797,9 @@ function loadState() {
     nextSeriesIndex = state.nextSeriesIndex || 0;
 
     // Filter out invalid media queue items (missing url/type)
+    clearQueue();
     mediaQueue = (state.mediaQueue || []).filter(item => item && item.url && item.type);
-    mediaQueue.forEach(item => {
-      item.preloader = new Audio();
-      item.preloader.preload = 'auto';
-      item.preloader.src = item.url;
-    });
+    preloadQueue();
 
     if (state.currentSrc) {
       audioElement.src = state.currentSrc;
